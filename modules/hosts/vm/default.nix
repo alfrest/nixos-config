@@ -16,6 +16,7 @@
       self.nixosModules.openssh
       self.nixosModules.packages
       self.nixosModules.state-version
+      self.nixosModules.home-manager
       self.nixosModules.user-alfrest
     ];
   };

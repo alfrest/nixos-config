@@ -10,6 +10,12 @@
 
     flake-parts.url = "github:hercules-ci/flake-parts";
     import-tree.url = "github:denful/import-tree";
+
+    # Home Manager, integrated as a NixOS module (see modules/system/home-manager.nix).
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
