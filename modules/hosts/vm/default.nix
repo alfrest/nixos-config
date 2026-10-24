@@ -41,6 +41,7 @@ in
       self.nixosModules.home-git
       self.nixosModules.home-zsh
       self.nixosModules.home-gtk
+      self.nixosModules.home-alacritty
     ];
   };
 }
