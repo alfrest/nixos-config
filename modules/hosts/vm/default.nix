@@ -34,6 +34,9 @@ in
       self.nixosModules.home-manager
       self.nixosModules.user-alfrest
 
+      # System-level desktop pieces (Wayland session, login).
+      self.nixosModules.desktop-graphics
+
       # Per-user feature modules (Home Manager).
       self.nixosModules.home-xdg-user-dirs
       self.nixosModules.home-fonts
