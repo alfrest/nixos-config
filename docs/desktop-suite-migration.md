@@ -1143,7 +1143,7 @@ Rollback: remove module; niri keeps working (only the startup spawn and bind tar
 
 ---
 
-### [ ] P13 — greetd + tuigreet (full parity login)
+### [x] P13 — greetd + tuigreet (full parity login) (done 2026-10-24)
 
 **Goal:** boot → tuigreet → login as `alfrest` → niri-session, with gnome-keyring
 unlocked at login. This is the highest-risk phase; do it only when P10–P12 are verified
@@ -1227,6 +1227,49 @@ Gotchas / lockout drills:
 
 Rollback: `git revert` + rebuild, or at boot pick the pre-greetd generation. Both leave
 the machine reachable via SSH.
+
+**Recovery drill recorded before the rebuild (2026-10-24):**
+1. SSH from another machine — `openssh` is enabled and untouched by this phase.
+2. At the boot menu, pick the generation before `2515924`; boot entries are kept by
+   `boot.loader.systemd-boot.configurationLimit` (default), so the pre-greetd system is
+   still selectable.
+3. `Ctrl+Alt+F2` on the VM console → `autovt@tty2` getty. Only `autovt@tty1` is disabled by
+   the greetd module, tty2–tty6 stay usable. Log in there and:
+   - `niri-session` to see the real compositor error (it prints to the tty/journal), or
+   - `sudo systemctl isolate multi-user.target` to drop back to plain gettys without
+     another reboot, or
+   - `sudo nixos-rebuild boot --flake .#vm --rollback` if the source tree is the problem.
+
+**Outcome (2026-10-24) — what actually landed:**
+- `modules/desktop/greetd.nix`, wired into the host list after `desktop-noctalia`. The module
+  declares only `enable`, `useTextGreeter` and
+  `settings.default_session.command = tuigreet --remember --remember-session --cmd niri-session`.
+  Everything else the plan sketch spelled out is already provided by the greetd module, so it
+  is **not** repeated: `terminal.vt = 1`, `default_session.user = "greeter"`,
+  `services.displayManager.enable = true`, the `greeter` user/group, the
+  `/var/cache/tuigreet` tmpfiles rule, and `systemd.services."autovt@tty1".enable = false`.
+- Generated `greetd.toml` (evaluated, not guessed):
+  `default_session = { command = "…/tuigreet-0.11.1/bin/tuigreet --remember --remember-session
+  --cmd …/niri-26.04/bin/niri-session"; user = "greeter" }`, `terminal.vt = 1`.
+- Generated `/etc/pam.d/greetd` contains `session optional … pam_gnome_keyring.so auto_start`
+  and `auth optional … pam_gnome_keyring.so`, because P10's
+  `services.gnome.gnome-keyring.enable` flows into
+  `security.pam.services.greetd.enableGnomeKeyring`. That is the keyring-unlock mechanism; no
+  PAM file is copied from the Ansible repo.
+- `useTextGreeter = true` routes boot logs to the journal and keeps systemd's TUI noise off
+  tty1 (the unit then gets `StandardInput=tty`, `StandardError=journal`, `TTYPath=/dev/tty1`).
+- No `initial_session` (autologin): autologin bypasses PAM and would leave the keyring locked.
+- `restartIfChanged = false` is set by the module, so a rebuild does not kill the running
+  greeter/session; `WantedBy=graphical.target`, `systemd.defaultUnit = graphical.target`.
+- Console confirmed graphical (open item 5): the running session is `Type=wayland`, `TTY=tty1`,
+  `VTNr=1`, and `/proc/cmdline` has no `console=ttyS*` — so tuigreet on tty1 is visible.
+- **Apply with `sudo nixos-rebuild boot --flake .#vm` + reboot, not `switch`:** starting greetd
+  on tty1 conflicts with the getty/niri session currently running there, and `switch` would
+  take the live session down mid-work.
+- Verification so far: parse, `nix flake check`, `nixos-rebuild dry-build`, HM
+  `activationPackage` eval all exit 0; greetd unit, greetd.toml and PAM text inspected.
+- **Pending:** the boot test itself (greeter → login → niri → keyring unlocked → lock screen).
+  Runtime checks below are for the user's reboot.
 
 ---
 
@@ -1343,7 +1386,7 @@ Checklist (each line is a check, not a claim):
 | P11 niri | done | 09f4d68 | 2026-10-24 | `modules/desktop/niri.nix` + vendored `files/niri/config.kdl` (336 lines, 6 placeholders). `niri validate -c <generated>` → `config is valid`. System packages: `niri`, `xwayland-satellite`, polkit agent (alacritty/playerctl stay per-user). parse/check/dry-build/HM eval exit 0, HM generation built. Session runs on the VM (user-confirmed). |
 | P11b niri output option | done | a2fe87d | 2026-10-24 | `desktop.niri.output` option; VM pins `Virtual-1` + `1920x1200@59.885` from `niri msg outputs`. `niri validate` green with the option set and forced `null`. |
 | P12 noctalia | done | 5318c98 | 2026-10-24 | `modules/desktop/noctalia.nix` + vendored `files/noctalia/config.toml`. Wallpaper D6 = `moonscape`; `polkit_agent = false` (niri keeps the KDE agent). `noctalia config validate` → `✓ Config is valid`; every `msg` subcommand used by the niri binds exists in 5.0.1. parse/check/dry-build/HM eval exit 0. Visual/bar checks pending a graphical session. |
-| P13 greetd | todo | | | highest risk |
+| P13 greetd | done | 2515924 | 2026-10-24 | `modules/desktop/greetd.nix` only declares enable + text greeter + `--cmd niri-session`; module supplies VT1, `greeter` user, tmpfiles, `autovt@tty1` off. Generated `greetd.toml` and `/etc/pam.d/greetd` (with `pam_gnome_keyring auto_start`) inspected. Console confirmed graphical (wayland session on tty1, no serial console in cmdline). Apply with `nixos-rebuild boot` + reboot — `switch` would kill the live tty1 session. Boot test pending. |
 | P15 audit | todo | | | |
 
 **Blockers:** (none yet — add date, symptom, command output, and what was tried)
@@ -1454,6 +1497,7 @@ workstation and are **not** migrated to the VM. The VM has its own explicit outp
    patch.
 3. ~~P12: choose the NixOS wallpaper (D6).~~ Resolved 2026-10-24: `moonscape`.
 4. P12: confirm no JDK is needed for `after/ftplugin/java.lua`.
-5. P13: confirm at rebuild time that the VM console is graphical (not serial).
+5. ~~P13: confirm at rebuild time that the VM console is graphical (not serial).~~ Resolved
+   2026-10-24: niri runs on tty1 (`Type=wayland`), and `/proc/cmdline` has no serial console.
 6. Later, outside this plan: if the API keys are wanted back, decide on a secret manager
    (agenix/sops-nix) as a separate migration — do not bolt it onto a phase.
