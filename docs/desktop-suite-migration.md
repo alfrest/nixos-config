@@ -818,7 +818,7 @@ Rollback: revert. `~/.config/nvim` becomes a backup on first activation (was abs
 
 ---
 
-### [ ] P10 — Graphics prerequisites (no login change yet)
+### [x] P10 — Graphics prerequisites (no login change yet) (done 2026-10-24)
 
 **Goal:** make a Wayland session *possible* on this VM, without touching getty/greetd.
 Nothing here is user-visible; it is the foundation for P11–P13.
@@ -873,6 +873,12 @@ Do not enable `services.xserver` — niri is not an X11 session, and the old con
 second display stack and can steal the TTY.
 
 Rollback: revert; no runtime state changes.
+
+**Outcome (2026-10-24):** `/dev/dri` verified on the VM before writing the module —
+`card1` (`card1-Virtual-1`, virtio-gpu) and `renderD128`. Module created as
+`modules/desktop/graphics.nix` (outer wrapper without `pkgs`, inner NixOS module with it).
+`xdg.portal.config.niri.default = [ "gnome" "gtk" ]` evaluates to the portal entry
+`default=gnome;gtk`. No `services.xserver`, no `LIBGL_ALWAYS_SOFTWARE`.
 
 ---
 
@@ -1215,7 +1221,7 @@ Checklist (each line is a check, not a claim):
 | P7 tmux | skipped | 713f185 | 2026-10-24 | User request: tmux no longer used, herdr replaces it. No module created; `tm` alias and `sesh` package removed. |
 | P8 herdr | done | f9c7bd4 | 2026-10-24 | `modules/home/herdr.nix` + verbatim `files/herdr/config.toml` (69 lines, diff clean). Built HM generation links it to `~/.config/herdr/config.toml`. parse/check/dry-build/HM eval exit 0. Runtime `herdr server reload-config` pending user `switch`. |
 | P9 nvim | done | f9eda5d | 2026-10-24 | `modules/home/nvim.nix` + verbatim `files/nvim` (22 files, `diff -r` clean). Linked with `mkOutOfStoreSymlink` → live repo dir (verified in built HM generation). `neovim`/`lazygit` moved out of system packages. parse/check/dry-build/HM eval exit 0. Runtime `:Lazy`/`:checkhealth` pending user `switch`. |
-| P10 graphics | todo | | | |
+| P10 graphics | done | 846724a | 2026-10-24 | `/dev/dri` has `card1` (Virtual-1) + `renderD128`. `modules/desktop/graphics.nix`: hardware.graphics, keyring, polkit, portals (`niri → gnome;gtk`), `NIXOS_OZONE_WL`. parse/check/dry-build/HM eval exit 0. No login change. |
 | P14 zen + playerctl | todo | | | must run before P11 |
 | P11 niri | todo | | | |
 | P12 noctalia | todo | | | |
