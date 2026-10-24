@@ -8,6 +8,9 @@
     {
       environment.systemPackages = with pkgs; [
         vim # Do not forget to add an editor to edit the configuration! The Nano editor is also installed by default.
+        neovim
+        git
+        lazygit
         wget
         opencode
         herdr
