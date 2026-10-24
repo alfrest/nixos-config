@@ -300,7 +300,7 @@ Rollback: drop module, rebuild.
 
 ---
 
-### [ ] P3 — CLI tools
+### [x] P3 — CLI tools (done 2026-10-24)
 
 **Goal:** the `cli_tools` package set, from nixpkgs, per-user.
 
@@ -347,6 +347,10 @@ Gotchas: `fd` is `fd`, not Debian's `fdfind` — the old `cli_tools` role create
 `npm` attribute.
 
 Rollback: revert, rebuild; packages disappear from the per-user profile.
+
+**Outcome (2026-10-24):** no removal from `modules/system/packages.nix` in this phase —
+none of the P3 packages were there. `git` moves in P4, `neovim`/`lazygit` in P9, and
+`herdr`'s keep-or-move decision is recorded in P8. `vim`, `wget`, `opencode` stay system-wide.
 
 ---
 
@@ -1121,7 +1125,7 @@ Checklist (each line is a check, not a claim):
 | P0 branch + baseline | done | branch base | `feat/desktop-suite` created; parse, `nix flake check`, `dry-build` all green |
 | P1 xdg dirs | done | 942c08b | 2026-10-24 | `modules/home/xdg-user-dirs.nix` + host list; parse, `nix flake check`, `dry-build`, HM `activationPackage` eval all exit 0. Runtime checks pending user `switch`. |
 | P2 fonts | done | 87b52de | 2026-10-24 | `modules/home/fonts.nix`; both Nerd Font families kept (open item 1 resolved: include FiraCode for parity). All four attrs verified in locked nixpkgs. parse/check/dry-build/HM eval exit 0. Runtime `fc-list` checks pending user `switch`. |
-| P3 cli tools | todo | | | |
+| P3 cli tools | done | 3a99edb | 2026-10-24 | `modules/home/cli-tools.nix`; all 12 attrs verified in locked nixpkgs, `rustc`/`cargo` smoke-tested (`rustc 1.95.0`). No system-package dedupe needed. parse/check/dry-build/HM eval exit 0. Runtime `command -v` checks pending user `switch`. |
 | P4 git + zsh | todo | | | |
 | P5 gtk | todo | | | |
 | P6 alacritty | todo | | | |
