@@ -1,0 +1,35 @@
+# noctalia (bar / launcher / control center / lock screen), vendored from the
+# Arch `noctalia` role (`roles/noctalia/files/config.toml`).
+#
+# Copied verbatim except for the two wallpaper values, which are `@NAME@`
+# placeholders expanded by `noctalia.nix` next to this file: the Arch box used
+# `/usr/share/backgrounds/archlinux/gritty.png`, which does not exist on NixOS.
+# On this VM they point at the NixOS `moonscape` artwork in the store (D6).
+#
+# One deliberate change, see plan §5 P12: `polkit_agent` is `false` here. The
+# old config had `true` *and* the niri config spawned the KDE agent, i.e. two
+# authentication agents. The migrated niri config keeps the KDE spawn (parity
+# with the old machine, and it survives a shell restart), so noctalia's embedded
+# agent stays off. Do not turn both on.
+
+[bar.default]
+margin_ends = 0
+radius = 0
+
+[keybinds]
+down = [ "Down", "Ctrl+n" ]
+up = [ "Up", "Ctrl+p" ]
+
+[shell]
+font_family = "Inter"
+polkit_agent = false
+
+[theme]
+source = "community"
+community_palette = "ADW"
+
+[wallpaper]
+directory = "@WALLPAPER_DIR@"
+
+    [wallpaper.default]
+    path = "@WALLPAPER@"

@@ -44,6 +44,7 @@ in
       # System-level desktop pieces (Wayland session, login).
       self.nixosModules.desktop-graphics
       self.nixosModules.desktop-niri
+      self.nixosModules.desktop-noctalia
 
       # Per-user feature modules (Home Manager).
       self.nixosModules.home-xdg-user-dirs
