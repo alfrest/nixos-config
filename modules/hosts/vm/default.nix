@@ -36,6 +36,7 @@ in
 
       # Per-user feature modules (Home Manager).
       self.nixosModules.home-xdg-user-dirs
+      self.nixosModules.home-fonts
     ];
   };
 }
