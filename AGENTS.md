@@ -12,6 +12,14 @@ Single-host NixOS flake for a QEMU VM (host `vm`), tracked in git. No CI, tests,
   - `modules/users/alfrest.nix` — user `alfrest` (`wheel`).
 - `/etc/nixos` is a root-owned copy of the old pre-dendritic layout. Edits here are not live until rebuilt from this directory.
 
+## Desktop suite migration
+
+The Arch workstation dotfiles (`https://github.com/alfrest/ansible-dotfiles`) are being
+ported in phases: `docs/desktop-suite-migration.md` holds the phase plan, per-phase
+verification steps, decisions, risk register and the progress log. Work happens on branch
+`feat/desktop-suite`. Read that file (section 0 first) before changing anything desktop-,
+graphics-, or login-related, and update its progress table when a phase lands.
+
 ## Verification is mandatory
 
 `nix-command` and `flakes` are enabled system-wide by `modules/system/nix.nix`
