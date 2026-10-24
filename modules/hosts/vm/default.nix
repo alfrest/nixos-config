@@ -28,8 +28,18 @@ in
     specialArgs = { inherit pkgs-unstable zen-browser; };
 
     modules = [
-      # Host identity: this machine is a QEMU VM.
-      { networking.hostName = "vm"; }
+      # Host identity: this machine is a QEMU VM, and its virtual display has a
+      # fixed modes list. The values come from `niri msg outputs` on the running
+      # VM: the output is `Virtual-1`, and 1920x1200@59.885 is one of the
+      # advertised modes (the preferred one is only 1280x800, so it has to be
+      # pinned). Scale/transform/position keep their option defaults.
+      {
+        networking.hostName = "vm";
+        desktop.niri.output = {
+          name = "Virtual-1";
+          mode = "1920x1200@59.885";
+        };
+      }
 
       self.nixosModules.vm-hardware
       self.nixosModules.boot

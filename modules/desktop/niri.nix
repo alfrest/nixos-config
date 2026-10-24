@@ -7,9 +7,13 @@
 # why the file is written with `text =` (a generated store file) instead of the
 # `mkOutOfStoreSymlink` used for herdr/nvim: the content has to change.
 #
-# The output block is deliberately empty on this host. The workstation pinned
-# `output "DP-2" { mode "2560x1440@239.958" scale 1 }`; a QEMU guest gets its
-# output auto-configured, so copying that block would break the session.
+# The display is per host, so it is an option rather than a literal:
+# `desktop.niri.output` (below) renders the KDL `output` block. `null` leaves
+# the output auto-configured; the VM sets its own name and mode in
+# `modules/hosts/vm/default.nix`. The old workstation's
+# `output "DP-2" { mode "2560x1440@239.958" scale 1 }` is what used to be
+# hard-coded in the template — it is not copied anywhere, the VM value comes
+# from `niri msg outputs` on the VM itself.
 #
 # Differences from the source config (all deliberate, see the plan §5 P11):
 #   - the `Mod+E` emacsclient bind is gone (emacs is out of scope),
@@ -33,11 +37,29 @@
 
 {
   flake.nixosModules.desktop-niri =
-    { pkgs, zen-browser, ... }:
+    { pkgs, zen-browser, config, lib, ... }:
     let
-      outputBlock = "";
+      cfg = config.desktop.niri;
 
-      config = builtins.replaceStrings
+      # KDL for one output, straight from `niri msg outputs` vocabulary: the
+      # name is the parenthesised identifier (`Virtual-1`), the mode string is
+      # one of the "Available modes" (`1920x1200@59.885`). Quoted strings
+      # everywhere: Nix indented strings would strip the four-space indent.
+      renderOutput =
+        output:
+        lib.concatStringsSep "\n" (
+          [ "output \"${output.name}\" {" ]
+          ++ lib.optional (output.mode != null) "    mode \"${output.mode}\""
+          ++ [ "    scale ${output.scale}" ]
+          ++ [ "    transform \"${output.transform}\"" ]
+          ++ lib.optional (output.position != null) "    position ${output.position}"
+          ++ lib.optional output.variableRefreshRate "    variable-refresh-rate"
+          ++ [ "}" ]
+        );
+
+      outputBlock = if cfg.output == null then "" else "\n" + renderOutput cfg.output;
+
+      configFile = builtins.replaceStrings
         [ "@NOCTALIA@" "@POLKIT@" "@TERMINAL@" "@BROWSER@" "@PLAYERCTL@" "@OUTPUT@" ]
         [
           "${pkgs.noctalia}/bin/noctalia"
@@ -50,12 +72,86 @@
         (builtins.readFile ./files/niri/config.kdl);
     in
     {
-      environment.systemPackages = with pkgs; [
-        niri
-        xwayland-satellite
-        kdePackages.polkit-kde-agent-1
-      ];
+      options.desktop.niri.output = lib.mkOption {
+        description = ''
+          Display to pin in the niri config. Leave `null` to let niri
+          auto-configure the output, which is what a guest with an
+          uncooperative virtual display wants. Each host chooses its own values
+          from `niri msg outputs`; they are not shared.
+        '';
+        type = lib.types.nullOr (
+          lib.types.submodule {
+            options = {
+              name = lib.mkOption {
+                type = lib.types.str;
+                example = "Virtual-1";
+                description = "Output name: the parenthesised identifier in `niri msg outputs`.";
+              };
 
-      home-manager.users.alfrest.xdg.configFile."niri/config.kdl".text = config;
+              mode = lib.mkOption {
+                type = lib.types.nullOr lib.types.str;
+                default = null;
+                example = "1920x1200@59.885";
+                description = ''
+                  Mode string from the "Available modes" list, including the
+                  refresh rate. `null` keeps the output's preferred mode.
+                '';
+              };
+
+              scale = lib.mkOption {
+                type = lib.types.str;
+                default = "1";
+                example = "1.5";
+                description = ''
+                  Scale factor, written verbatim into the KDL (`1`, `1.5`, …).
+                  A string, not a float: the config is a text file and this way
+                  `1` does not become `1.000000`.
+                '';
+              };
+
+              transform = lib.mkOption {
+                type = lib.types.str;
+                default = "normal";
+                description = "Rotation: `normal`, `90`, `180`, `270`, `flipped`, …";
+              };
+
+              position = lib.mkOption {
+                type = lib.types.nullOr lib.types.str;
+                default = "x=0 y=0";
+                example = "x=1920 y=0";
+                description = "Placement in the global coordinate space, as KDL (`x=0 y=0`). `null` omits the line.";
+              };
+
+              variableRefreshRate = lib.mkOption {
+                type = lib.types.bool;
+                default = false;
+                description = ''
+                  Ask for variable refresh rate. Defaults to off: virtual
+                  outputs usually report "not supported", and the old
+                  workstation's `variable-refresh-rate` line was about real
+                  hardware.
+                '';
+              };
+            };
+          }
+        );
+        default = null;
+        example = lib.literalExpression ''
+          {
+            name = "Virtual-1";
+            mode = "1920x1200@59.885";
+          }
+        '';
+      };
+
+      config = {
+        environment.systemPackages = with pkgs; [
+          niri
+          xwayland-satellite
+          kdePackages.polkit-kde-agent-1
+        ];
+
+        home-manager.users.alfrest.xdg.configFile."niri/config.kdl".text = configFile;
+      };
     };
 }

@@ -4,9 +4,10 @@
 // `@NAME@` placeholders; the module expands them with `replaceStrings` to
 // absolute store paths, so no bind depends on PATH.
 //
-// The output placeholder expands to an empty string on this VM: the old
-// workstation pinned `output "DP-2" { mode "2560x1440@239.958" scale 1 }`, but
-// QEMU outputs are auto-configured here.
+// The output placeholder expands to the `output` block of the host's display,
+// built from `desktop.niri.output` in `modules/hosts/vm/default.nix`: on this
+// VM `output "Virtual-1" { mode "1920x1200@59.885" scale 1 ... }`. Hosts that
+// leave the option `null` get an empty string and let niri auto-configure.
 //
 // Deliberate differences from the source template: the `Mod+E` (emacsclient)
 // bind is removed (no emacs), and every spawned program is an absolute path.
