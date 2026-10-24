@@ -534,7 +534,7 @@ is what produces `color-scheme = prefer-dark`. `adw-gtk3` is not repeated in
 
 ---
 
-### [ ] P6 — Alacritty
+### [x] P6 — Alacritty (done 2026-10-24)
 
 **Goal:** same font, size 12, vscode theme, `Ctrl+Backspace` → `\x17`.
 
@@ -583,6 +583,16 @@ the exact file path above is the correct form. The old relative
 `~/.config/alacritty/themes/themes/vscode.toml` must **not** be copied.
 
 Rollback: revert.
+
+**Outcome (2026-10-24) — deviations from the sketch above:**
+- The theme uses `programs.alacritty.theme = "vscode"` rather than a hand-written
+  `settings.general.import`; Home Manager interpolates `pkgs.alacritty-theme` and fails the
+  build if the theme name is missing.
+- The keybinding **must** be `chars = "\\u0017"` in Nix, not `"\u0017"`. The latter is a raw
+  control character; Home Manager's TOML post-processing (`substituteInPlace` for escape
+  sequences) turns it into the literal string `"u0017"`. Verified by parsing the generated
+  file with `tomllib`: `chars == '\x17'`, `font.size == 12`,
+  `general.import == [.../vscode.toml]`.
 
 ---
 
@@ -1157,7 +1167,7 @@ Checklist (each line is a check, not a claim):
 | P3 cli tools | done | 3a99edb | 2026-10-24 | `modules/home/cli-tools.nix`; all 12 attrs verified in locked nixpkgs, `rustc`/`cargo` smoke-tested (`rustc 1.95.0`). No system-package dedupe needed. parse/check/dry-build/HM eval exit 0. Runtime `command -v` checks pending user `switch`. |
 | P4 git + zsh | done | 34579a9 | 2026-10-24 | `modules/home/git.nix` + `modules/home/zsh.nix`; git removed from system packages. Generated `git config`, `.zshrc` (vi-mode vars before omz at 800, plugins `vi-mode git fzf`, syntax/autosuggestion sourced, HISTSIZE 50000) inspected in the built HM generation. parse/check/dry-build/HM eval exit 0. Runtime checks pending user `switch`. |
 | P5 gtk | done | 5e57d6c | 2026-10-24 | `modules/home/gtk.nix` + `programs.dconf.enable`. Runtime verified on the VM: `dconf read` → `'adw-gtk3-dark'`, `'prefer-dark'`, `'Adwaita'`; `~/.config/gtk-3.0/settings.ini` matches. (`gsettings` is absent by design; use `dconf`.) |
-| P6 alacritty | todo | | | |
+| P6 alacritty | done | 28082c4 | 2026-10-24 | `modules/home/alacritty.nix`; theme via `programs.alacritty.theme = "vscode"`. Generated TOML parsed with `tomllib`: `chars == '\x17'`, size 12, family `JetBrains Mono Nerd Font Mono`, import `vscode.toml`. parse/check/dry-build/HM eval exit 0. Visual check pending a session. |
 | P7 tmux | todo | | | |
 | P8 herdr | todo | | | |
 | P9 nvim | todo | | | |
