@@ -33,6 +33,9 @@ in
       self.nixosModules.state-version
       self.nixosModules.home-manager
       self.nixosModules.user-alfrest
+
+      # Per-user feature modules (Home Manager).
+      self.nixosModules.home-xdg-user-dirs
     ];
   };
 }
