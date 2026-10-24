@@ -13,12 +13,19 @@ let
   # from (or far behind in) stable are taken from it; everything else stays on
   # the stable `pkgs`. Modules see it as the `pkgs-unstable` argument.
   pkgs-unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
+
+  # Zen browser from the community flake (see flake.nix). It is not in nixpkgs,
+  # so it is passed down as its own argument; modules see it as `zen-browser`.
+  # The flake's `default` package is its `beta` variant and installs
+  # `bin/zen-beta` (there is no `bin/zen`); niri interpolates that path for
+  # `Mod+B`.
+  zen-browser = inputs.zen-browser.packages.${system}.default;
 in
 
 {
   flake.nixosConfigurations.vm = inputs.nixpkgs.lib.nixosSystem {
     inherit system;
-    specialArgs = { inherit pkgs-unstable; };
+    specialArgs = { inherit pkgs-unstable zen-browser; };
 
     modules = [
       # Host identity: this machine is a QEMU VM.
@@ -46,6 +53,7 @@ in
       self.nixosModules.home-gtk
       self.nixosModules.home-alacritty
       self.nixosModules.home-herdr
+      self.nixosModules.home-media
       self.nixosModules.home-nvim
     ];
   };

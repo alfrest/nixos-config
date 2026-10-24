@@ -25,6 +25,19 @@
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Community package for the Zen browser, which nixpkgs does not carry.
+    # Third-party and therefore pinned in flake.lock independently of nixpkgs;
+    # both `follows` lines are required, otherwise a second nixpkgs and a second
+    # home-manager are evaluated (huge closure, option conflicts).
+    # Only `packages.<system>.default` is used (see modules/home/media.nix and
+    # the `Mod+B` bind in modules/desktop/niri.nix), so the attribute name must
+    # stay stable; do not chase the `twilight` variants.
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
   };
 
   outputs =
