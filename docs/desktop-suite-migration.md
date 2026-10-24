@@ -1018,7 +1018,7 @@ Rollback: remove module, rebuild, delete `~/.config/niri` (HM-owned). No login i
 
 ---
 
-### [ ] P12 — Noctalia (bar/shell)
+### [x] P12 — Noctalia (bar/shell) (done 2026-10-24)
 
 **Goal:** the shell that draws the bar, launcher, control center, lock screen and handles
 volume/brightness, with the migrated `config.toml`.
@@ -1081,6 +1081,35 @@ Gotchas:
   packaging bug to report, not something to patch in `gtk.nix`.
 
 Rollback: remove module; niri keeps working (only the startup spawn and bind targets fail).
+
+**Outcome (2026-10-24) — what actually landed:**
+- `modules/desktop/noctalia.nix` + `modules/desktop/files/noctalia/config.toml`, wired into
+  the host list after `desktop-niri`. `environment.systemPackages = [ pkgs.noctalia ]`
+  (`noctalia 5.0.1`) and `xdg.configFile."noctalia/config.toml".text` from `readFile` +
+  `replaceStrings`.
+- **D6 resolved by the user: `moonscape`.** The config ends up with
+  `directory = /nix/store/…-moonscape-2022-04-19/share/backgrounds/nixos` and
+  `path = …/nix-wallpaper-moonscape.png` (`gnomeFilePath`, with `builtins.dirOf` for the
+  directory). Both are store symlinks to the PNG, so the artwork is in the closure because
+  the config text references it — no `home.packages` entry needed.
+- **`polkit_agent = false`** (the only change to the vendored TOML, besides the wallpaper
+  placeholders). The source had `true` *and* the niri config spawned the KDE agent, i.e. two
+  agents on the old machine. The KDE spawn is kept (it survives a shell restart and matches
+  the old machine's observable behaviour); noctalia's embedded agent stays off. Do not flip
+  it back without removing the niri spawn line.
+- Verified with noctalia's own validator: `noctalia config validate <generated>` prints
+  `✓ Config is valid`. `noctalia --version` → `noctalia v5.0.1`.
+- Every `msg` subcommand the niri binds use exists in 5.0.1 (checked with `noctalia msg
+  --help`): `panel-toggle <id>` (`launcher`, `control-center`), `settings-toggle`,
+  `session <lock|…>`, `volume-up|down|mute`, `brightness-up|down`. So the P11 binds are
+  correct as written and need no change.
+- `python-psutil` / `python-gobject` from the Arch role were **not** added: the package
+  starts and validates without them. If the bar fails at runtime with a Python error, that
+  is a packaging issue to report, not a `gtk.nix` patch.
+- Verification: parse, `nix flake check`, `nixos-rebuild dry-build` and the HM
+  `activationPackage` eval all exit 0.
+- **Not done here:** the visual/runtime checks below — they need a graphical niri session on
+  the user's rebuilt machine (and, for the lock screen, the greetd/keyring work in P13).
 
 ---
 
@@ -1282,7 +1311,7 @@ Checklist (each line is a check, not a claim):
 | P10 graphics | done | 846724a | 2026-10-24 | `/dev/dri` has `card1` (Virtual-1) + `renderD128`. `modules/desktop/graphics.nix`: hardware.graphics, keyring, polkit, portals (`niri → gnome;gtk`), `NIXOS_OZONE_WL`. parse/check/dry-build/HM eval exit 0. No login change. |
 | P14 zen + playerctl | done | fdcc552 | 2026-10-24 | `inputs.zen-browser` (both `follows`) + `specialArgs` `zen-browser` + `modules/home/media.nix`. Binary is `zen-beta` (default = beta), not `zen`; P11 sketch corrected. `nix flake check`, `dry-build`, HM `activationPackage` build exit 0; `zen-beta --version` → `Mozilla Zen 1.23.4b`, `playerctl --version` → `v2.4.1`. |
 | P11 niri | done | 09f4d68 | 2026-10-24 | `modules/desktop/niri.nix` + vendored `files/niri/config.kdl` (336 lines, 6 placeholders). `niri validate -c <generated>` → `config is valid`. System packages: `niri`, `xwayland-satellite`, polkit agent (alacritty/playerctl stay per-user). parse/check/dry-build/HM eval exit 0, HM generation built. Session start (`niri-session` on a TTY) pending user `switch`. |
-| P12 noctalia | todo | | | |
+| P12 noctalia | done | 5318c98 | 2026-10-24 | `modules/desktop/noctalia.nix` + vendored `files/noctalia/config.toml`. Wallpaper D6 = `moonscape`; `polkit_agent = false` (niri keeps the KDE agent). `noctalia config validate` → `✓ Config is valid`; every `msg` subcommand used by the niri binds exists in 5.0.1. parse/check/dry-build/HM eval exit 0. Visual/bar checks pending a graphical session. |
 | P13 greetd | todo | | | highest risk |
 | P15 audit | todo | | | |
 
@@ -1388,7 +1417,7 @@ workstation and are **not** migrated to the VM.
 2. ~~P9: confirm the lockfile strategy (recommended: lockfile in the state dir).~~
    Resolved 2026-10-24: `mkOutOfStoreSymlink` to the vendored nvim tree (D12), no `lazy.lua`
    patch.
-3. P12: choose the NixOS wallpaper (D6).
+3. ~~P12: choose the NixOS wallpaper (D6).~~ Resolved 2026-10-24: `moonscape`.
 4. P12: confirm no JDK is needed for `after/ftplugin/java.lua`.
 5. P13: confirm at rebuild time that the VM console is graphical (not serial).
 6. Later, outside this plan: if the API keys are wanted back, decide on a secret manager
