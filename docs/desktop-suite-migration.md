@@ -944,8 +944,10 @@ Content changes versus the source `config.kdl.j2` (all deliberate):
    `prefer-no-csd`, `animations`, `input { keyboard { xkb { layout "se" } numlock } ... }`:
    copy verbatim.
 7. `screenshot-path "~/Pictures/Screenshots/..."` stays; P1 creates the directory.
-8. Output block: omitted for the VM. If the VM advertises a fixed resolution and the user
-   wants it, add `output "Virtual-1" { mode "..." }` later — do **not** copy `DP-2`.
+8. Output block: **rendered from the `desktop.niri.output` option**, not copied. `null`
+   (the default) leaves the output auto-configured. The `vm` sets
+   `{ name = "Virtual-1"; mode = "1920x1200@59.885"; }` from `niri msg outputs`; another
+   host sets its own values. Do **not** copy `DP-2` from the workstation.
 9. `Mod+M`, `Mod+C`, etc. all unchanged.
 
 Runtime checks (from a TTY, after rebuild — no login manager yet):
@@ -1015,6 +1017,34 @@ Rollback: remove module, rebuild, delete `~/.config/niri` (HM-owned). No login i
   its `config.kdl` is green.
 - **Not done here:** starting the session. That is the manual runtime check below and needs
   the user's rebuild first. No login mechanism was touched.
+
+**Addendum (2026-10-24, user request) — explicit per-host output.** The empty output block
+was replaced by a NixOS option, `desktop.niri.output`, so the display is declared per host
+instead of hard-coded:
+
+- submodule fields: `name` (required), `mode` (`null` = preferred mode), `scale`, `transform`,
+  `position` (`null` omits the line), `variableRefreshRate`; the whole option is `null` by
+  default, which means "let niri auto-configure" and reproduces the previous behaviour.
+- `vm` sets `{ name = "Virtual-1"; mode = "1920x1200@59.885"; }` in
+  `modules/hosts/vm/default.nix`. Both values come from `niri msg outputs` on the running
+  VM; the *preferred* mode is only `1280x800@74.994`, so the mode has to be pinned or the
+  session comes up at 1280x800.
+- rendered result:
+
+  ```
+  output "Virtual-1" {
+      mode "1920x1200@59.885"
+      scale 1
+      transform "normal"
+      position x=0 y=0
+  }
+  ```
+
+- `scale` is a **string** (`"1"`, `"1.5"`): a float would render as `1.000000` in the KDL.
+  `variableRefreshRate` defaults to off — the VM output reports "Variable refresh rate: not
+  supported", and the source's `variable-refresh-rate` line described real hardware.
+- Verified with `niri validate` in both states: option set (`config is valid`) and forced to
+  `null` via `extendModules` + `lib.mkForce` (block omitted, `config is valid`).
 
 ---
 
@@ -1310,7 +1340,8 @@ Checklist (each line is a check, not a claim):
 | P9 nvim | done | f9eda5d | 2026-10-24 | `modules/home/nvim.nix` + verbatim `files/nvim` (22 files, `diff -r` clean). Linked with `mkOutOfStoreSymlink` → live repo dir (verified in built HM generation). `neovim`/`lazygit` moved out of system packages. parse/check/dry-build/HM eval exit 0. Runtime `:Lazy`/`:checkhealth` pending user `switch`. |
 | P10 graphics | done | 846724a | 2026-10-24 | `/dev/dri` has `card1` (Virtual-1) + `renderD128`. `modules/desktop/graphics.nix`: hardware.graphics, keyring, polkit, portals (`niri → gnome;gtk`), `NIXOS_OZONE_WL`. parse/check/dry-build/HM eval exit 0. No login change. |
 | P14 zen + playerctl | done | fdcc552 | 2026-10-24 | `inputs.zen-browser` (both `follows`) + `specialArgs` `zen-browser` + `modules/home/media.nix`. Binary is `zen-beta` (default = beta), not `zen`; P11 sketch corrected. `nix flake check`, `dry-build`, HM `activationPackage` build exit 0; `zen-beta --version` → `Mozilla Zen 1.23.4b`, `playerctl --version` → `v2.4.1`. |
-| P11 niri | done | 09f4d68 | 2026-10-24 | `modules/desktop/niri.nix` + vendored `files/niri/config.kdl` (336 lines, 6 placeholders). `niri validate -c <generated>` → `config is valid`. System packages: `niri`, `xwayland-satellite`, polkit agent (alacritty/playerctl stay per-user). parse/check/dry-build/HM eval exit 0, HM generation built. Session start (`niri-session` on a TTY) pending user `switch`. |
+| P11 niri | done | 09f4d68 | 2026-10-24 | `modules/desktop/niri.nix` + vendored `files/niri/config.kdl` (336 lines, 6 placeholders). `niri validate -c <generated>` → `config is valid`. System packages: `niri`, `xwayland-satellite`, polkit agent (alacritty/playerctl stay per-user). parse/check/dry-build/HM eval exit 0, HM generation built. Session runs on the VM (user-confirmed). |
+| P11b niri output option | done | a2fe87d | 2026-10-24 | `desktop.niri.output` option; VM pins `Virtual-1` + `1920x1200@59.885` from `niri msg outputs`. `niri validate` green with the option set and forced `null`. |
 | P12 noctalia | done | 5318c98 | 2026-10-24 | `modules/desktop/noctalia.nix` + vendored `files/noctalia/config.toml`. Wallpaper D6 = `moonscape`; `polkit_agent = false` (niri keeps the KDE agent). `noctalia config validate` → `✓ Config is valid`; every `msg` subcommand used by the niri binds exists in 5.0.1. parse/check/dry-build/HM eval exit 0. Visual/bar checks pending a graphical session. |
 | P13 greetd | todo | | | highest risk |
 | P15 audit | todo | | | |
@@ -1356,6 +1387,9 @@ relative to `https://github.com/alfrest/ansible-dotfiles` (`d75c36b`).
 ### niri
 - `xkb layout "se"`, `numlock`, `click-method "clickfinger"`, `natural-scroll`,
   mouse `accel-speed -0.6`, `warp-mouse-to-focus`, `focus-follows-mouse max-scroll-amount="0%"`.
+- VM output (from `niri msg outputs`): `Virtual-1`, mode `1920x1200@59.885`, scale `1`,
+  transform `normal`, position `x=0 y=0`; no VRR (not supported). Set through the
+  `desktop.niri.output` option in `modules/hosts/vm/default.nix`, not in the KDL file.
 - `layout.gaps 1`, preset widths 1/3, 1/2, 2/3, default column width 1/2.
 - focus-ring off, border width 1, active `#6a9fb5`, inactive `#505050`.
 - `prefer-no-csd`, `hotkey-overlay.skip-at-startup`, hot corners off.
@@ -1406,7 +1440,8 @@ inventories/local/host_vars/dsk.yml    # niri output vars only
 ```
 
 The `niri` output values (`DP-2`, `2560x1440@239.958`, scale `1`) belong to the physical
-workstation and are **not** migrated to the VM.
+workstation and are **not** migrated to the VM. The VM has its own explicit output
+(`Virtual-1`, `1920x1200@59.885`) via `desktop.niri.output`.
 
 ---
 
