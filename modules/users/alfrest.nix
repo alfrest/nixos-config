@@ -1,7 +1,3 @@
-# Everything about the `alfrest` user in one place: the NixOS account and its
-# Home Manager environment. Both halves describe the same person, so they live
-# in the same module instead of being split across a system tree and a home
-# tree where they could drift apart.
 { ... }:
 
 {
@@ -10,23 +6,16 @@
     {
       users.users.alfrest = {
         isNormalUser = true;
-        extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+        extraGroups = [ "wheel" ];
         packages = with pkgs; [ ];
       };
 
-      # `home-manager.users` exists because the host selects
-      # `nixosModules.home-manager`; feature modules can add to this same tree
-      # with `home-manager.users.alfrest.<option> = ...`.
       home-manager.users.alfrest = {
-        # Home Manager's counterpart to `system.stateVersion`: the release this
-        # home environment was first created on. Like `system.stateVersion`,
-        # never change it after the fact -- it must name a release supported by
-        # the Home Manager branch in flake.nix (release-26.05), and it mirrors
-        # `system.stateVersion`.
+        # Never change after the initial install; must match `system.stateVersion`.
         home.stateVersion = "26.05";
 
-        # Per-user packages belong here rather than in
-        # `users.users.alfrest.packages` or `environment.systemPackages`.
+        # Per-user packages belong here, not in `users.users.alfrest.packages`
+        # or `environment.systemPackages`.
         home.packages = with pkgs; [ ];
       };
     };

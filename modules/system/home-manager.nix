@@ -1,23 +1,9 @@
-# Home Manager, integrated as a NixOS module.
+# Home Manager integrated as a NixOS module, so `home-manager.users.*` is built
+# and activated by `nixos-rebuild` in the same generation as the system.
 #
-# Home Manager is not run standalone here: this module imports Home Manager's
-# own NixOS module, so `home-manager.users.*` is built and activated by
-# `nixos-rebuild` in the same generation as the rest of the system.
-#
-# Because Home Manager is just another NixOS option tree, a feature module may
-# set NixOS options and Home Manager options side by side whenever they serve
-# the same concern, e.g.
-#
-#   { pkgs, ... }:
-#   {
-#     environment.systemPackages = [ pkgs.ripgrep ];              # system-wide
-#     home-manager.users.alfrest.programs.git.enable = true;      # user-level
-#   }
-#
-# The only requirement is that the host selects `nixosModules.home-manager`
-# (see modules/hosts/vm/default.nix). Everything user-specific should prefer
-# `home-manager.users.<name>`; `environment.systemPackages` stays reserved for
-# things that must exist system-wide (services, sudo, recovery shells, ...).
+# User-specific settings belong under `home-manager.users.<name>`;
+# `environment.systemPackages` is for things that must exist system-wide
+# (services, sudo, recovery shells).
 { inputs, ... }:
 
 {
@@ -26,18 +12,14 @@
     {
       imports = [ inputs.home-manager.nixosModules.home-manager ];
 
-      # Reuse the system's nixpkgs instance instead of evaluating a second one,
-      # so NixOS and Home Manager see exactly the same `pkgs` (same overlays,
-      # same versions).
+      # Reuse the system's nixpkgs instead of evaluating a second instance.
       home-manager.useGlobalPkgs = true;
 
-      # Install Home Manager packages through the system generation
-      # (`users.users.<name>.packages`) rather than a separate per-user
-      # `nix profile`. Everything then rolls back with `nixos-rebuild`.
+      # Install packages through the system generation so they roll back with
+      # `nixos-rebuild` instead of a separate per-user profile.
       home-manager.useUserPackages = true;
 
-      # Home Manager refuses to overwrite files it did not create (e.g. an
-      # existing ~/.bashrc). Move them aside instead of aborting activation.
+      # Move conflicting files aside instead of aborting activation.
       home-manager.backupFileExtension = "hm-backup";
     };
 }

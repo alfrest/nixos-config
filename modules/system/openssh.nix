@@ -1,4 +1,3 @@
-# Enable the OpenSSH daemon.
 { ... }:
 
 {

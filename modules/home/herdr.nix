@@ -1,25 +1,9 @@
-# herdr configuration, ported from the Arch `herdr` role.
+# herdr config, linked out-of-store so editing the repo file changes it without
+# a rebuild. The path must be absolute: inside a flake `./files/...` resolves to
+# a read-only store copy.
 #
-# The role created `~/.config/herdr` and symlinked `config.toml` into it. Here
-# the same file is vendored verbatim under `files/herdr/config.toml` and linked
-# by Home Manager — as an **out-of-store** symlink to the live checkout, so
-# editing the repo file changes herdr's config immediately (no rebuild, no
-# read-only store copy). The file is copied unchanged on purpose: its comments
-# record which herdr token is a foreground vs a background (measured from a
-# rendered frame), and that knowledge is not recoverable from the values alone.
-#
-# Why the path is spelled out: inside a flake, `./files/...` resolves to the
-# read-only copy in `/nix/store`, which would defeat `mkOutOfStoreSymlink`.
-# The link therefore points at `<homeDirectory>/nixos-config/...`, i.e. this
-# checkout. Moving the repo would require updating this path.
-#
-# `files/` contains no `.nix` files, so `import-tree` does not descend into it.
-#
-# The `herdr` package itself stays in modules/system/packages.nix
-# (`pkgs-unstable.herdr`, recorded as the P15 audit decision). Installing it here
-# would either pull a second copy from stable `pkgs` (a different store path) or
-# require threading `pkgs-unstable` into this Home Manager module; the binary is
-# also usable outside a login session. Only the config is per-user.
+# The `herdr` package stays in modules/system/packages.nix (`pkgs-unstable`);
+# only the config is per-user.
 { ... }:
 
 {

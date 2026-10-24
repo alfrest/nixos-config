@@ -1,38 +1,13 @@
-# niri, the Wayland compositor, ported from the Arch `niri` role.
+# niri config. `files/niri/config.kdl` is vendored with `@NAME@` placeholders
+# for spawned programs; this module substitutes absolute store paths, so the
+# file is written with `text =` rather than `mkOutOfStoreSymlink`.
 #
-# The role shipped `~/.config/niri/config.kdl` (a Jinja template with the output
-# block filled from `host_vars/dsk.yml`). Here the template is vendored under
-# `files/niri/config.kdl` with every spawned program replaced by an `@NAME@`
-# placeholder, and this module interpolates the absolute store paths. That is
-# why the file is written with `text =` (a generated store file) instead of the
-# `mkOutOfStoreSymlink` used for herdr/nvim: the content has to change.
+# The display is per host via `desktop.niri.output` (below); `null` lets niri
+# auto-configure it.
 #
-# The display is per host, so it is an option rather than a literal:
-# `desktop.niri.output` (below) renders the KDL `output` block. `null` leaves
-# the output auto-configured; the VM sets its own name and mode in
-# `modules/hosts/vm/default.nix`. The old workstation's
-# `output "DP-2" { mode "2560x1440@239.958" scale 1 }` is what used to be
-# hard-coded in the template — it is not copied anywhere, the VM value comes
-# from `niri msg outputs` on the VM itself.
-#
-# Differences from the source config (all deliberate, see the plan §5 P11):
-#   - the `Mod+E` emacsclient bind is gone (emacs is out of scope),
-#   - `Mod+B` starts the Zen browser from the P14 flake input, whose binary is
-#     `zen-beta` (there is no `zen`),
-#   - the polkit agent is spawned from its real NixOS location
-#     (`libexec/polkit-kde-authentication-agent-1`, not `/usr/lib/...`),
-#   - every other bind, the input/layout/gestures sections and the screenshot
-#     path are verbatim.
-#
-# Login: greetd runs `${pkgs.niri}/bin/niri-session` as the session command
-# (modules/desktop/greetd.nix). The same command can still be started by hand
-# from a TTY when debugging a login problem.
-#
-# Package placement: `alacritty` and `playerctl` are already in the per-user
-# profile (P6/P14) and are spawned by absolute path, so they are not repeated
-# here. `xwayland-satellite` must be on PATH because niri auto-spawns it for
-# X11 clients (there is no NixOS module for it in 26.05). The polkit agent is a
-# session-wide service, so it stays system-side.
+# Note: `Mod+B` uses `zen-beta` (the flake ships no `zen`), and the polkit agent
+# lives at `libexec/polkit-kde-authentication-agent-1`, not `/usr/lib/...`.
+# `xwayland-satellite` must be on PATH for X11 clients; niri spawns it itself.
 { ... }:
 
 {
@@ -41,10 +16,8 @@
     let
       cfg = config.desktop.niri;
 
-      # KDL for one output, straight from `niri msg outputs` vocabulary: the
-      # name is the parenthesised identifier (`Virtual-1`), the mode string is
-      # one of the "Available modes" (`1920x1200@59.885`). Quoted strings
-      # everywhere: Nix indented strings would strip the four-space indent.
+      # KDL for one output, using `niri msg outputs` vocabulary. Nix indented
+      # strings would strip the four-space indent, hence explicit strings.
       renderOutput =
         output:
         lib.concatStringsSep "\n" (
@@ -74,10 +47,8 @@
     {
       options.desktop.niri.output = lib.mkOption {
         description = ''
-          Display to pin in the niri config. Leave `null` to let niri
-          auto-configure the output, which is what a guest with an
-          uncooperative virtual display wants. Each host chooses its own values
-          from `niri msg outputs`; they are not shared.
+          Display to pin in the niri config. `null` lets niri auto-configure
+          the output.
         '';
         type = lib.types.nullOr (
           lib.types.submodule {
@@ -103,9 +74,8 @@
                 default = "1";
                 example = "1.5";
                 description = ''
-                  Scale factor, written verbatim into the KDL (`1`, `1.5`, …).
-                  A string, not a float: the config is a text file and this way
-                  `1` does not become `1.000000`.
+                  Scale factor written verbatim into the KDL (`1`, `1.5`, …).
+                  A string so `1` does not become `1.000000`.
                 '';
               };
 
@@ -126,10 +96,8 @@
                 type = lib.types.bool;
                 default = false;
                 description = ''
-                  Ask for variable refresh rate. Defaults to off: virtual
-                  outputs usually report "not supported", and the old
-                  workstation's `variable-refresh-rate` line was about real
-                  hardware.
+                  Ask for variable refresh rate. Off by default: virtual outputs
+                  usually report "not supported".
                 '';
               };
             };

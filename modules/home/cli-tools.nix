@@ -1,17 +1,8 @@
-# Per-user CLI tools, ported from the Arch `cli_tools` role.
+# Per-user CLI tools. Installed through `home-manager.useUserPackages`, so they
+# roll back with the user's generation instead of living in the system profile.
 #
-# They live in the user's Home Manager profile (installed through
-# `users.users.alfrest.packages`, because `home-manager.useUserPackages = true`)
-# rather than in `environment.systemPackages`: they roll back with the user's
-# generation and do not pollute the system profile.
-#
-# Package mapping from the source role:
-#   Arch `rust`       -> `rustc` + `cargo` (there is no `rust` attribute)
-#   Arch `npm`        -> `nodejs` (ships npm; there is no `npm` attribute)
-# AUR `sesh-bin` is dropped: sesh is a tmux session manager and tmux is not
-# migrated (herdr replaces it, see P7/P8).
-# `fd` is simply `fd` here, so the old `/usr/local/bin/fd` symlink workaround
-# for Debian-style `fdfind` disappears entirely.
+# Attribute gotchas: there is no `rust` (use `rustc` + `cargo`) and no `npm`
+# (use `nodejs`).
 { ... }:
 
 {

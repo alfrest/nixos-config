@@ -1,10 +1,6 @@
 # Do not modify the generated settings below!  They come from ‘nixos-generate-config’
 # and may be overwritten by future invocations.  Please make changes to the
 # other modules in this directory instead.
-#
-# The file is wrapped in a flake-parts module so the generated description is
-# exposed as `flake.nixosModules.vm-hardware` and selected through `self` like
-# every other module of the `vm` host in this repository.
 { ... }:
 
 {

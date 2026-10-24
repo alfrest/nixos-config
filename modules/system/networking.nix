@@ -1,4 +1,3 @@
-# Configure network connections interactively with nmcli or nmtui.
 { ... }:
 
 {

@@ -1,22 +1,12 @@
-# Alacritty, ported from the Arch `alacritty` role.
+# Alacritty. The theme comes from `pkgs.alacritty-theme` via Home Manager,
+# which fails the build if the theme name is wrong.
 #
-# Source: `~/.config/alacritty/alacritty.toml` with a `git clone` of
-# alacritty/alacritty-theme next to it, imported as
-# `~/.config/alacritty/themes/themes/vscode.toml`.
+# Font family `JetBrains Mono Nerd Font Mono` is literal: the extra `Mono`
+# matches what `nerd-fonts.jetbrains-mono` provides.
 #
-# Here the theme comes from `pkgs.alacritty-theme` through Home Manager's
-# `theme` option, which both interpolates the store path and fails the build if
-# the theme name does not exist. No clone, no stale checkout.
-#
-# The font family string is `JetBrains Mono Nerd Font Mono` (the extra `Mono`
-# matters — it is what the old machine used and what the installed
-# nerd-fonts.jetbrains-mono provides).
-#
-# `Ctrl+Backspace` is bound to chars `\u0017` (ASCII ETX / Ctrl-W), so the shell
-# deletes a word. In Nix the value must be written `"\\u0017"` (backslash-u),
-# not `"\u0017"`: Home Manager's TOML writer then unescapes it to the single
-# `\u0017` escape alacritty expects. The source TOML wrote `\x17`, which is not
-# a valid TOML escape.
+# `Ctrl+Backspace` must be `"\\u0017"` (double backslash). Home Manager's TOML
+# writer unescapes it to the `\u0017` alacritty expects; a single `\u0017`
+# becomes a literal control character. `\x17` is not a valid TOML escape.
 { ... }:
 
 {
