@@ -1,6 +1,7 @@
 # The host aggregate: everything that is true for this machine lives here as
 # a NixOS module under `flake.nixosModules`, and this file selects which of
-# those modules make up the `nixos` configuration.
+# those modules make up the `nixos` configuration. The machine-generated
+# hardware description sits next to this file and is selected the same way.
 { self, inputs, ... }:
 
 {
