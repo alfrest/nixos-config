@@ -354,7 +354,7 @@ none of the P3 packages were there. `git` moves in P4, `neovim`/`lazygit` in P9,
 
 ---
 
-### [ ] P4 — Git + Zsh
+### [x] P4 — Git + Zsh (done 2026-10-24)
 
 **Goal:** same git identity/behaviour, same interactive shell with oh-my-zsh, the four
 plugins, vi-mode, `EDITOR` logic, `tm` alias, zoxide init.
@@ -456,6 +456,24 @@ git config --get user.name; git config --get init.defaultBranch
 Interactive: prefix/vi-mode keys, autosuggestion rendering, syntax highlighting.
 
 Rollback: revert; `chsh` is not needed because the shell is declared.
+
+**Outcome (2026-10-24) — deviations from the sketch above:**
+- Home Manager 26.05 renamed `programs.git.userName`/`userEmail`/`extraConfig` to
+  `programs.git.settings`; the old names still evaluate but emit rename warnings. Used the
+  new form.
+- With `xdg.enable` on (P1) the generated files live at `~/.config/git/config` and
+  `~/.config/zsh/{.zshrc,.zshenv}` (with `ZDOTDIR` set) instead of `~/.gitconfig` /
+  `~/.zshrc`. Same content, XDG locations; git reads both config paths.
+- `zsh-syntax-highlighting` / `zsh-autosuggestions` use HM's first-class
+  `syntaxHighlighting.enable` / `autosuggestion.enable` options instead of
+  `programs.zsh.plugins` with hand-built `src` paths — they are sourced at the correct
+  order (1200 / 700) from nixpkgs.
+- vi-mode variables are set with `lib.mkOrder 500` because oh-my-zsh is sourced at order
+  800 and the plugin reads them at load time. `EDITOR`/`tm`/`zoxide` stay at 1000.
+- `history.size = 50000` restores oh-my-zsh's scrollback default (HM defaults to 10000).
+- `programs.zsh.enableGlobalCompInit = false`: oh-my-zsh runs `compinit` itself.
+- `git` removed from `modules/system/packages.nix`; `vim`, `wget`, `lazygit`, `neovim`,
+  `opencode`, `herdr` stay for now (see P9/P8).
 
 ---
 
@@ -1126,7 +1144,7 @@ Checklist (each line is a check, not a claim):
 | P1 xdg dirs | done | 942c08b | 2026-10-24 | `modules/home/xdg-user-dirs.nix` + host list; parse, `nix flake check`, `dry-build`, HM `activationPackage` eval all exit 0. Runtime checks pending user `switch`. |
 | P2 fonts | done | 87b52de | 2026-10-24 | `modules/home/fonts.nix`; both Nerd Font families kept (open item 1 resolved: include FiraCode for parity). All four attrs verified in locked nixpkgs. parse/check/dry-build/HM eval exit 0. Runtime `fc-list` checks pending user `switch`. |
 | P3 cli tools | done | 3a99edb | 2026-10-24 | `modules/home/cli-tools.nix`; all 12 attrs verified in locked nixpkgs, `rustc`/`cargo` smoke-tested (`rustc 1.95.0`). No system-package dedupe needed. parse/check/dry-build/HM eval exit 0. Runtime `command -v` checks pending user `switch`. |
-| P4 git + zsh | todo | | | |
+| P4 git + zsh | done | 34579a9 | 2026-10-24 | `modules/home/git.nix` + `modules/home/zsh.nix`; git removed from system packages. Generated `git config`, `.zshrc` (vi-mode vars before omz at 800, plugins `vi-mode git fzf`, syntax/autosuggestion sourced, HISTSIZE 50000) inspected in the built HM generation. parse/check/dry-build/HM eval exit 0. Runtime checks pending user `switch`. |
 | P5 gtk | todo | | | |
 | P6 alacritty | todo | | | |
 | P7 tmux | todo | | | |
