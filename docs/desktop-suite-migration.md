@@ -141,6 +141,7 @@ invent a placeholder secret mechanism (agenix/sops) as part of this migration.
 | D9 | zsh goes through Home Manager (`programs.zsh`), not a hand-written `zshrc`. | Same plugins/theme/aliases, declared as options. |
 | D10 | GTK settings go through `gtk.*` (Home Manager) which writes dconf, replacing the `community.general.dconf` task. | |
 | D11 | `waybar` stays out (see scope), `arch-distrobox`/`yay`/`aur_builder` are not recreated. | |
+| D12 | Config files that need **no** Nix interpolation are linked with `mkOutOfStoreSymlink` to the file in this checkout, not copied into the store. | User preference: edits are live and the file stays editable. The path is `<homeDirectory>/nixos-config/...`, i.e. the repo must stay at `/home/alfrest/nixos-config`. Inside a flake `./files/...` is a read-only store copy, so it cannot be used as the link target. Interpolation-heavy configs (niri, noctalia) still get `readFile` + `replaceStrings`, which is substitution, not merging. |
 
 ---
 
@@ -171,9 +172,15 @@ Note the phase numbers below are shifted by one relative to the original sketch:
 P10 = graphics prerequisites, P11 = niri, P12 = noctalia, P13 = greetd, P14 = final audit.
 
 Vendored data lives under `modules/home/files/` (contains no `.nix` files, so `import-tree`
-ignores it). The niri/noctalia config text can either be a `builtins.readFile ./files/...`
-with `replaceStrings`, or a Nix multi-line string. **Prefer `readFile` + interpolation**:
-it keeps the original KDL/TOML readable and diffable, which is what makes verification easy.
+ignores it). Two ways to wire a vendored file, pick by whether Nix has to change its content:
+
+- **No interpolation needed** (herdr, nvim): link it out-of-store with
+  `config.lib.file.mkOutOfStoreSymlink "<homeDirectory>/nixos-config/.../file"` (D12). The
+  file stays editable and changes apply without a rebuild. The path must be the live
+  checkout, not `./file` — inside a flake that resolves to a read-only store copy.
+- **Store paths must be interpolated** (niri, noctalia): `builtins.readFile ./files/...`
+  plus `replaceStrings` for the placeholders, written with `text =`. This is substitution
+  of placeholders, not merging config fragments.
 
 Module skeleton gotcha: `pkgs` is only in scope inside the **inner** NixOS module
 (`flake.nixosModules.<name> = { pkgs, ... }: { ... };`). A few sketches in §5 put
@@ -710,8 +717,10 @@ second copy in `home.packages`, that would create two different store paths.
 Rollback: revert; config file is removed on the next HM activation.
 
 **Outcome (2026-10-24):** config vendored verbatim (69 lines, `diff` clean against the
-source) and linked as `~/.config/herdr/config.toml` (store symlink verified in the built HM
-generation). Package left in `modules/system/packages.nix` as decided above.
+source) and linked as `~/.config/herdr/config.toml` with `mkOutOfStoreSymlink` (D12), so it
+points at `modules/home/files/herdr/config.toml` in this checkout and edits apply without a
+rebuild. Built HM generation verified: home file → store symlink → live repo path. Package
+left in `modules/system/packages.nix` as decided above.
 
 ---
 
@@ -762,6 +771,11 @@ Steps:
    - or `mkOutOfStoreSymlink` to the live checkout (writable, but hardcodes
      `/home/alfrest/nixos-config`, and edits bypass git until committed).
    Record the choice in the module comment.
+
+   **Decision (2026-10-24):** `mkOutOfStoreSymlink` to the vendored tree (D12), per user
+   preference. The config stays fully writable, so `lazy.nvim` updates `lazy-lock.json` and
+   `:LazyExtras` writes `lazyvim.json` normally; those edits land in this repo and must be
+   committed like any other change. Do **not** patch `lazy.lua`.
 
 Runtime checks:
 ```sh
@@ -1290,7 +1304,9 @@ workstation and are **not** migrated to the VM.
 
 1. P2: confirm FiraCode Nerd Font is still wanted (the Arch branch never downloaded it;
    it was only fetched on Debian/Ubuntu).
-2. P9: confirm the lockfile strategy (recommended: lockfile in the state dir).
+2. ~~P9: confirm the lockfile strategy (recommended: lockfile in the state dir).~~
+   Resolved 2026-10-24: `mkOutOfStoreSymlink` to the vendored nvim tree (D12), no `lazy.lua`
+   patch.
 3. P12: choose the NixOS wallpaper (D6).
 4. P12: confirm no JDK is needed for `after/ftplugin/java.lua`.
 5. P13: confirm at rebuild time that the VM console is graphical (not serial).
