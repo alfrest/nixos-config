@@ -1,6 +1,7 @@
 # Dotfiles migration plan — Ansible (Arch `dsk`) → NixOS `vm`
 
-Status: **planning complete, no code written yet**
+Status: **migration complete — P15 parity audit green; merge to `main` pending the final
+visual checks in §10**
 Created: 2026-10-24
 Source of truth: `https://github.com/alfrest/ansible-dotfiles` at commit `d75c36b` ("update vault")
 Target repo: `/home/alfrest/nixos-config` (dendritic NixOS flake, host `vm`)
@@ -33,7 +34,8 @@ phases 10–13 touch graphics and login and carry the real lockout risk.
 Branch **`feat/desktop-suite`** was created from `main` and is the branch this plan lives
 on. Baseline verified before any change (see P0). Everything below happens on that
 branch, one commit per phase. `main` stays a known-good, headless-safe configuration
-until P15 passes.
+until P15 passes. P0–P15 are now done on this branch; the merge to `main` happens after
+the final runtime checks in §10.
 
 To check you are on the right branch:
 
@@ -1268,8 +1270,13 @@ the machine reachable via SSH.
   take the live session down mid-work.
 - Verification so far: parse, `nix flake check`, `nixos-rebuild dry-build`, HM
   `activationPackage` eval all exit 0; greetd unit, greetd.toml and PAM text inspected.
-- **Pending:** the boot test itself (greeter → login → niri → keyring unlocked → lock screen).
-  Runtime checks below are for the user's reboot.
+- **Boot test (2026-10-24, user reboot): green for greeter → login → niri → keyring.** After
+  the reboot `greetd` is active; the journal shows the `greeter` session followed by
+  `pam_unix(greetd:session): session opened for user alfrest` and
+  `gkr-pam: gnome-keyring-daemon started properly and unlocked keyring`. `loginctl` reports
+  the session as `Type=wayland`, `TTY=tty1`, `Service=greetd`, and both `niri --session` and
+  `noctalia` are running. **Still pending:** the visual lock/unlock check (`Super+Escape` →
+  password → unlock), which needs the user at the console.
 
 ---
 
@@ -1346,7 +1353,7 @@ Rollback: revert flake.nix + lock (`git checkout flake.lock`), remove module.
 
 ---
 
-### [ ] P15 — Parity audit + cleanup
+### [x] P15 — Parity audit + cleanup (done 2026-10-24)
 
 **Goal:** prove nothing in scope was silently dropped and remove transitional duplicates.
 
@@ -1364,6 +1371,68 @@ Checklist (each line is a check, not a claim):
 6. Update `/home/alfrest/nixos-config/AGENTS.md` if the module layout introduced new
    conventions (new `modules/home/` and `modules/desktop/` trees, `files/` subdirs).
 7. Merge `feat/desktop-suite` → `main` only after P15 passes.
+
+**Outcome (2026-10-24) — parity audit:**
+
+Source snapshot for every diff: `git clone https://github.com/alfrest/ansible-dotfiles` at
+`d75c36b` (same commit the plan is based on).
+
+| Source | Nix counterpart | Diff result |
+| --- | --- | --- |
+| `roles/git/files/gitconfig` | generated `~/.config/git/config` | same `user.name`, `user.email`, `init.defaultBranch`, `pull.rebase`; only key quoting/order differ (INI is equivalent) |
+| `roles/zsh/files/zshrc`, `templates/zshenv.j2` | `modules/home/zsh.nix` → `~/.config/zsh/{.zshrc,.zshenv}` | same theme, plugins, vi-mode variables, `EDITOR` logic, `zoxide` and `QT_QPA_PLATFORMTHEME`; dropped items are the intentional ones listed below |
+| `roles/alacritty/files/alacritty.toml` | `modules/home/alacritty.nix` → `alacritty.toml` | same families/size/`Ctrl+Backspace`; theme import is now the `pkgs.alacritty-theme` store path; `chars = "\u0017"` (the source's `\x17` is not valid TOML) |
+| `roles/gtk/tasks/main.yml` | `modules/home/gtk.nix` + dconf | `gtk-theme=adw-gtk3-dark`, `icon-theme=Adwaita`, `color-scheme=prefer-dark` (runtime-verified in P5) |
+| `roles/herdr/files/config.toml` | `modules/home/files/herdr/config.toml` | `diff` clean (69 lines), linked live |
+| `roles/nvim/files/nvim/**` | `modules/home/files/nvim/**` | `diff -r` clean, 22 files, linked live |
+| `roles/niri/templates/config.kdl.j2` | `modules/desktop/files/niri/config.kdl` + `desktop.niri.output` | only the six placeholders, the `Mod+E` removal and the per-host output block differ; `niri validate` → `config is valid` |
+| `roles/noctalia/files/config.toml` | `modules/desktop/files/noctalia/config.toml` | only the wallpaper store paths, `polkit_agent=false` and a header comment differ; `noctalia config validate` → `✓ Config is valid` |
+| `roles/tuigreet/templates/{config.toml.j2,greetd}` | `modules/desktop/greetd.nix` | `--cmd niri-session` added; VT/user come from the module; PAM generated with `pam_gnome_keyring auto_start` |
+| `roles/{xdg_user_dirs,fonts,cli_tools}` | `modules/home/{xdg-user-dirs,fonts,cli-tools}.nix` | package sets mapped 1:1 (see P1–P3) |
+| `roles/tmux` | — | skipped by user request (P7); `sesh` dropped with it |
+
+**Intentional differences (reported, not accidental):** emacs bind and `PATH` entry removed
+(D3); `/etc/pam.d/greetd` generated instead of templated; tuigreet `--cmd` added; wallpaper
+swapped to `moonscape` (D6); alacritty theme path changed; oh-my-zsh/TPM cloning removed;
+apt `fdfind` shim removed; rbw socket and the three API keys dropped; no JDK; tmux/`sesh`
+not migrated; `herdr` binary stays system-side (decision below).
+
+**Gates:**
+- Secrets: `git grep -nE "API_KEY|PASSWORD|vault|rbw|SSH_AUTH_SOCK" -- modules/` returns
+  only comments that state what was removed, plus
+  `modules/home/files/nvim/lua/plugins/avante.lua:10: api_key_name = "GROQ_API_KEY"` in the
+  vendored LazyVim tree. That line is the **name** of the environment variable avante reads
+  at runtime; no key value exists anywhere in the repo. `git grep` for literal key/token
+  shapes (`sk-…`, `ghp_…`, private-key headers, `api_key = "…"`) returns nothing.
+- Arch-isms: `git grep -nE "pacman|/usr/lib|/usr/bin|aur_builder|yay" -- modules/` returns
+  only comments that describe the Arch source; no executable path is used at runtime.
+- Duplicates: evaluated `environment.systemPackages` and `home.packages`; they share no
+  user tool and no package name with a different store path. The only shared store paths
+  are infrastructure both profiles pull in (`zsh`, `man-db`, `shared-mime-info`, curl's
+  `-bin`, zsh completions) — the same derivation, not a second copy. `vim`, `wget`,
+  `opencode` and `herdr` stay system-wide on purpose: recovery shells/root need the first
+  two, and the last two come from `pkgs-unstable`, which the Home Manager modules do not
+  receive (`herdr`'s config is still per-user).
+
+**Cleanup landed in this phase (comments/docs only, no behaviour change):**
+- `modules/system/packages.nix`: records why `vim`/`wget`/`opencode`/`herdr` stay
+  system-wide and where the other user tools moved.
+- `modules/home/herdr.nix`: package placement is a recorded decision, not a TODO.
+- `modules/desktop/{niri,graphics}.nix`: stale "greetd follows later" wording replaced by
+  the current login wiring.
+- `modules/home/gtk.nix`: notes that noctalia does not need the Arch `python-*` packages.
+- `AGENTS.md`: documents `modules/home/`, `modules/desktop/`, `files/`, the
+  `mkOutOfStoreSymlink` vs `replaceStrings` conventions, and fixes the stale
+  `nixos-unstable` pin statement.
+
+**Verification:** parse, `nix flake check` (all checks passed), `nixos-rebuild dry-build`
+(exit 0) and the HM `activationPackage` eval all green. The HM generation store path is
+unchanged from before the cleanup, which proves the edits are documentation-only. `niri
+validate` and `noctalia config validate` are green on the generated files.
+
+**Runtime status:** the post-P13 boot is green for login → niri → keyring → bar (see P13's
+boot test). The only outstanding manual checks are the terminal and the lock/unlock cycle,
+plus the merge to `main` — both left to the user (§10 item 7).
 
 ---
 
@@ -1386,8 +1455,8 @@ Checklist (each line is a check, not a claim):
 | P11 niri | done | 09f4d68 | 2026-10-24 | `modules/desktop/niri.nix` + vendored `files/niri/config.kdl` (336 lines, 6 placeholders). `niri validate -c <generated>` → `config is valid`. System packages: `niri`, `xwayland-satellite`, polkit agent (alacritty/playerctl stay per-user). parse/check/dry-build/HM eval exit 0, HM generation built. Session runs on the VM (user-confirmed). |
 | P11b niri output option | done | a2fe87d | 2026-10-24 | `desktop.niri.output` option; VM pins `Virtual-1` + `1920x1200@59.885` from `niri msg outputs`. `niri validate` green with the option set and forced `null`. |
 | P12 noctalia | done | 5318c98 | 2026-10-24 | `modules/desktop/noctalia.nix` + vendored `files/noctalia/config.toml`. Wallpaper D6 = `moonscape`; `polkit_agent = false` (niri keeps the KDE agent). `noctalia config validate` → `✓ Config is valid`; every `msg` subcommand used by the niri binds exists in 5.0.1. parse/check/dry-build/HM eval exit 0. Visual/bar checks pending a graphical session. |
-| P13 greetd | done | 2515924 | 2026-10-24 | `modules/desktop/greetd.nix` only declares enable + text greeter + `--cmd niri-session`; module supplies VT1, `greeter` user, tmpfiles, `autovt@tty1` off. Generated `greetd.toml` and `/etc/pam.d/greetd` (with `pam_gnome_keyring auto_start`) inspected. Console confirmed graphical (wayland session on tty1, no serial console in cmdline). Apply with `nixos-rebuild boot` + reboot — `switch` would kill the live tty1 session. Boot test pending. |
-| P15 audit | todo | | | |
+| P13 greetd | done | 2515924 | 2026-10-24 | `modules/desktop/greetd.nix` only declares enable + text greeter + `--cmd niri-session`; module supplies VT1, `greeter` user, tmpfiles, `autovt@tty1` off. Generated `greetd.toml` and `/etc/pam.d/greetd` (with `pam_gnome_keyring auto_start`) inspected. Console confirmed graphical (wayland session on tty1, no serial console in cmdline). Apply with `nixos-rebuild boot` + reboot — `switch` would kill the live tty1 session. Boot test green: greetd login as `alfrest`, journal `gkr-pam: … unlocked keyring`, `niri --session` + `noctalia` running on tty1. Visual lock/unlock pending. |
+| P15 audit | done | c6aa34f | 2026-10-24 | Full source→Nix diff table recorded in §5 P15 (git, zsh, alacritty, gtk, herdr, nvim, niri, noctalia, tuigreet, package roles). Secret gate clean (only removal comments + avante's env-var *name*); Arch-ism gate only in comments; no duplicate user tools (`vim`/`wget`/`opencode`/`herdr` system-side on purpose). Cleanup was docs/comments only — HM generation store path unchanged. parse/check/dry-build/HM eval green; `niri validate` + `noctalia config validate` green. Runtime lock/unlock + merge to `main` left to the user. |
 
 **Blockers:** (none yet — add date, symptom, command output, and what was tried)
 
@@ -1490,14 +1559,20 @@ workstation and are **not** migrated to the VM. The VM has its own explicit outp
 
 ## 10. Open items for the user
 
-1. P2: confirm FiraCode Nerd Font is still wanted (the Arch branch never downloaded it;
-   it was only fetched on Debian/Ubuntu).
+1. ~~P2: confirm FiraCode Nerd Font is still wanted.~~ Resolved 2026-10-24 in P2: both Nerd
+   Font families are installed (`nerd-fonts.fira-code` + `nerd-fonts.jetbrains-mono`), since
+   the Arch branch's omission of FiraCode was an artefact of its distro split.
 2. ~~P9: confirm the lockfile strategy (recommended: lockfile in the state dir).~~
    Resolved 2026-10-24: `mkOutOfStoreSymlink` to the vendored nvim tree (D12), no `lazy.lua`
    patch.
 3. ~~P12: choose the NixOS wallpaper (D6).~~ Resolved 2026-10-24: `moonscape`.
-4. P12: confirm no JDK is needed for `after/ftplugin/java.lua`.
+4. P12: confirm no JDK is needed for `after/ftplugin/java.lua`. Still open, deliberately: no
+   JDK is installed, so the Java ftplugin and `google-java-format` stay unexercised. Ask
+   for `jdk21` if that changes.
 5. ~~P13: confirm at rebuild time that the VM console is graphical (not serial).~~ Resolved
    2026-10-24: niri runs on tty1 (`Type=wayland`), and `/proc/cmdline` has no serial console.
 6. Later, outside this plan: if the API keys are wanted back, decide on a secret manager
    (agenix/sops-nix) as a separate migration — do not bolt it onto a phase.
+7. Final sign-off (P15): at the console, verify terminal (`Mod+Return` → alacritty) and the
+   lock/unlock cycle (`Super+Escape` → password → session resumes). Then merge
+   `feat/desktop-suite` → `main` (the repo history keeps the phase commits, so no squash).
