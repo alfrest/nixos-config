@@ -175,6 +175,11 @@ ignores it). The niri/noctalia config text can either be a `builtins.readFile ./
 with `replaceStrings`, or a Nix multi-line string. **Prefer `readFile` + interpolation**:
 it keeps the original KDL/TOML readable and diffable, which is what makes verification easy.
 
+Module skeleton gotcha: `pkgs` is only in scope inside the **inner** NixOS module
+(`flake.nixosModules.<name> = { pkgs, ... }: { ... };`). A few sketches in §5 put
+`{ pkgs, ... }` on the outer flake-parts wrapper; that fails evaluation with
+`attribute 'pkgs' missing`. Corrected in P2, watch for it in P3/P5/P6/P7/P11.
+
 ---
 
 ## 5. Phases
@@ -248,7 +253,7 @@ Rollback: remove module from host list, rebuild, `git revert`.
 
 ---
 
-### [ ] P2 — Fonts
+### [x] P2 — Fonts (done 2026-10-24)
 
 **Goal:** Inter, Source Serif, JetBrains Mono Nerd Font, FiraCode Nerd Font; fontconfig on.
 
@@ -1115,7 +1120,7 @@ Checklist (each line is a check, not a claim):
 | --- | --- | --- | --- | --- |
 | P0 branch + baseline | done | branch base | `feat/desktop-suite` created; parse, `nix flake check`, `dry-build` all green |
 | P1 xdg dirs | done | 942c08b | 2026-10-24 | `modules/home/xdg-user-dirs.nix` + host list; parse, `nix flake check`, `dry-build`, HM `activationPackage` eval all exit 0. Runtime checks pending user `switch`. |
-| P2 fonts | todo | | | |
+| P2 fonts | done | 87b52de | 2026-10-24 | `modules/home/fonts.nix`; both Nerd Font families kept (open item 1 resolved: include FiraCode for parity). All four attrs verified in locked nixpkgs. parse/check/dry-build/HM eval exit 0. Runtime `fc-list` checks pending user `switch`. |
 | P3 cli tools | todo | | | |
 | P4 git + zsh | todo | | | |
 | P5 gtk | todo | | | |
