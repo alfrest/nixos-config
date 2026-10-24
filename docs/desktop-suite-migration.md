@@ -892,26 +892,26 @@ New file `modules/desktop/niri.nix` + `modules/desktop/files/niri/config.kdl`
 package names replaced by placeholders — see below).
 
 ```nix
-{ pkgs, ... }:
-let
-  # QEMU/VM: leave the output auto-configured. The old workstation pinned
-  # `output "DP-2" { mode "2560x1440@239.958" scale 1 }`; that block is intentionally
-  # absent unless `output` is set below.
-  outputBlock = "";
-  config = builtins.replaceStrings
-    [ "@NOCTALIA@" "@POLKIT@" "@TERMINAL@" "@BROWSER@" "@PLAYERCTL@" "@OUTPUT@" ]
-    [ "${pkgs.noctalia}/bin/noctalia"
-      "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1"
-      "${pkgs.alacritty}/bin/alacritty"
-      "${pkgs.zen-browser}/bin/zen"
-      "${pkgs.playerctl}/bin/playerctl"
-      outputBlock
-    ]
-    (builtins.readFile ./files/niri/config.kdl);
-in
+{ ... }:
 {
   flake.nixosModules.desktop-niri =
-    { ... }:
+    { pkgs, zen-browser, ... }:
+    let
+      # QEMU/VM: leave the output auto-configured. The old workstation pinned
+      # `output "DP-2" { mode "2560x1440@239.958" scale 1 }`; that block is
+      # intentionally absent unless `outputBlock` is set below.
+      outputBlock = "";
+      config = builtins.replaceStrings
+        [ "@NOCTALIA@" "@POLKIT@" "@TERMINAL@" "@BROWSER@" "@PLAYERCTL@" "@OUTPUT@" ]
+        [ "${pkgs.noctalia}/bin/noctalia"
+          "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1"
+          "${pkgs.alacritty}/bin/alacritty"
+          "${zen-browser}/bin/zen-beta"   # P14: the flake's binary is `zen-beta`, there is no `zen`
+          "${pkgs.playerctl}/bin/playerctl"
+          outputBlock
+        ]
+        (builtins.readFile ./files/niri/config.kdl);
+    in
     {
       environment.systemPackages = with pkgs; [
         niri
@@ -936,10 +936,9 @@ Content changes versus the source `config.kdl.j2` (all deliberate):
    this spawn fails harmlessly and logs — acceptable ordering, but if you prefer a clean
    P11, comment the line and un-comment it in P12).
 3. `Mod+Return ... { spawn "alacritty"; }` → absolute path.
-4. `Mod+B ... { spawn "zen-browser"; }` → `${pkgs.zen-browser}/bin/zen`; **requires P14's
-   flake input first**, so either land P14 before P11 or temporarily bind a placeholder.
-   Recommended order change: do **P14 (zen input + playerctl package) immediately before
-   P11**. Record whichever order you take in the progress table.
+4. `Mod+B ... { spawn "zen-browser"; }` → `"${zen-browser}/bin/zen-beta"` (the flake
+   argument from P14, which is already landed; its binary is `zen-beta`, see the P14
+   outcome).
 5. **Remove** `Mod+E { spawn-sh "emacsclient ..."; }` entirely (D3).
 6. `Mod+O`, workspaces, column ops, mouse/touchpad, `gestures.hot-corners off`,
    `prefer-no-csd`, `animations`, `input { keyboard { xkb { layout "se" } numlock } ... }`:
@@ -1132,7 +1131,7 @@ the machine reachable via SSH.
 
 ---
 
-### [ ] P14 — Zen browser flake input (+ playerctl wiring) — **do before P11**
+### [x] P14 — Zen browser flake input (+ playerctl wiring) — **do before P11** (done 2026-10-24)
 
 **Goal:** make `${pkgs.zen-browser}` exist for P11's `Mod+B` bind.
 
@@ -1184,6 +1183,25 @@ Gotchas:
 
 Rollback: revert flake.nix + lock (`git checkout flake.lock`), remove module.
 
+**Outcome (2026-10-24) — deviations from the sketch above:**
+- The flake was added exactly as sketched (both `follows` lines) and locked to
+  `zen-browser/f19490ac...` (2026-10-21). `nix flake metadata` confirms a single nixpkgs +
+  home-manager instance.
+- `modules/hosts/vm/default.nix` passes `zen-browser = inputs.zen-browser.packages.${system}.default;`
+  through `specialArgs`, next to `pkgs-unstable`. The argument has to be taken on the
+  **inner** NixOS module (`{ pkgs, zen-browser, ... }`) — on the flake-parts wrapper it fails
+  with `attribute 'zen-browser' missing`, the §4 gotcha. Hit and fixed during `nix flake check`.
+- **The binary is `zen-beta`, not `zen`.** The flake's `default` is an alias for `beta`
+  (`default.nix`: `default = beta;`), and `package.nix` names the binary
+  `zen-${name}` → `$out/bin/zen-beta` (package `zen-beta-1.23.4b`). There is no `bin/zen`.
+  P11's `Mod+B` bind must therefore be `"${zen-browser}/bin/zen-beta"`, and `zen` does not
+  exist in `$PATH` — the command users type is `zen-beta`.
+- `modules/home/media.nix` installs `zen-browser` + `pkgs.playerctl` (outer wrapper without
+  args). Verified in the built HM generation: `home-path/bin/{zen-beta,playerctl,playerctld}`
+  exist, `zen-beta --version` → `Mozilla Zen 1.23.4b`, `playerctl --version` → `v2.4.1`.
+- No default-browser/MIME wiring was added; the desktop entry is `zen-beta.desktop`. The
+  old Arch role only installed the package and bound a key. Say so if that is wanted.
+
 ---
 
 ### [ ] P15 — Parity audit + cleanup
@@ -1222,7 +1240,7 @@ Checklist (each line is a check, not a claim):
 | P8 herdr | done | f9c7bd4 | 2026-10-24 | `modules/home/herdr.nix` + verbatim `files/herdr/config.toml` (69 lines, diff clean). Built HM generation links it to `~/.config/herdr/config.toml`. parse/check/dry-build/HM eval exit 0. Runtime `herdr server reload-config` pending user `switch`. |
 | P9 nvim | done | f9eda5d | 2026-10-24 | `modules/home/nvim.nix` + verbatim `files/nvim` (22 files, `diff -r` clean). Linked with `mkOutOfStoreSymlink` → live repo dir (verified in built HM generation). `neovim`/`lazygit` moved out of system packages. parse/check/dry-build/HM eval exit 0. Runtime `:Lazy`/`:checkhealth` pending user `switch`. |
 | P10 graphics | done | 846724a | 2026-10-24 | `/dev/dri` has `card1` (Virtual-1) + `renderD128`. `modules/desktop/graphics.nix`: hardware.graphics, keyring, polkit, portals (`niri → gnome;gtk`), `NIXOS_OZONE_WL`. parse/check/dry-build/HM eval exit 0. No login change. |
-| P14 zen + playerctl | todo | | | must run before P11 |
+| P14 zen + playerctl | done | fdcc552 | 2026-10-24 | `inputs.zen-browser` (both `follows`) + `specialArgs` `zen-browser` + `modules/home/media.nix`. Binary is `zen-beta` (default = beta), not `zen`; P11 sketch corrected. `nix flake check`, `dry-build`, HM `activationPackage` build exit 0; `zen-beta --version` → `Mozilla Zen 1.23.4b`, `playerctl --version` → `v2.4.1`. |
 | P11 niri | todo | | | |
 | P12 noctalia | todo | | | |
 | P13 greetd | todo | | | highest risk |
