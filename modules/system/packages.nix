@@ -8,10 +8,9 @@
     {
       environment.systemPackages = with pkgs; [
         vim # Do not forget to add an editor to edit the configuration! The Nano editor is also installed by default.
-        neovim
-        lazygit
         wget
-        # `git` moved to the per-user profile in P4 (modules/home/git.nix).
+        # `git` moved to the per-user profile in P4 (modules/home/git.nix);
+        # `neovim` and `lazygit` follow in P9 (modules/home/nvim.nix).
         # Fast-moving tools: built from the unstable channel (see flake.nix,
         # input `nixpkgs-unstable`) so they keep up with upstream development.
         pkgs-unstable.opencode

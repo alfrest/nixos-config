@@ -43,6 +43,7 @@ in
       self.nixosModules.home-gtk
       self.nixosModules.home-alacritty
       self.nixosModules.home-herdr
+      self.nixosModules.home-nvim
     ];
   };
 }
