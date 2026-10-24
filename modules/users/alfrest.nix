@@ -20,8 +20,10 @@
       home-manager.users.alfrest = {
         # Home Manager's counterpart to `system.stateVersion`: the release this
         # home environment was first created on. Like `system.stateVersion`,
-        # never change it after the fact.
-        home.stateVersion = "26.11";
+        # never change it after the fact -- it must name a release supported by
+        # the Home Manager branch in flake.nix (release-26.05), and it mirrors
+        # `system.stateVersion`.
+        home.stateVersion = "26.05";
 
         # Per-user packages belong here rather than in
         # `users.users.alfrest.packages` or `environment.systemPackages`.

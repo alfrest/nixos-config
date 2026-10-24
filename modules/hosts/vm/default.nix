@@ -4,8 +4,22 @@
 # hardware description sits next to this file and is selected the same way.
 { self, inputs, ... }:
 
+let
+  # The host is a plain x86_64 QEMU guest; the hardware module pins the same
+  # default via `nixpkgs.hostPlatform`.
+  system = "x86_64-linux";
+
+  # A second, unstable nixpkgs instance. Only the few packages that are missing
+  # from (or far behind in) stable are taken from it; everything else stays on
+  # the stable `pkgs`. Modules see it as the `pkgs-unstable` argument.
+  pkgs-unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
+in
+
 {
   flake.nixosConfigurations.vm = inputs.nixpkgs.lib.nixosSystem {
+    inherit system;
+    specialArgs = { inherit pkgs-unstable; };
+
     modules = [
       # Host identity: this machine is a QEMU VM.
       { networking.hostName = "vm"; }

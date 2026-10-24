@@ -4,7 +4,7 @@
 
 {
   flake.nixosModules.packages =
-    { pkgs, ... }:
+    { pkgs, pkgs-unstable, ... }:
     {
       environment.systemPackages = with pkgs; [
         vim # Do not forget to add an editor to edit the configuration! The Nano editor is also installed by default.
@@ -12,8 +12,10 @@
         git
         lazygit
         wget
-        opencode
-        herdr
+        # Fast-moving tools: built from the unstable channel (see flake.nix,
+        # input `nixpkgs-unstable`) so they keep up with upstream development.
+        pkgs-unstable.opencode
+        pkgs-unstable.herdr
       ];
     };
 }
