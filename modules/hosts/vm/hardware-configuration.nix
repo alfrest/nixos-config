@@ -3,12 +3,12 @@
 # other modules in this directory instead.
 #
 # The file is wrapped in a flake-parts module so the generated description is
-# exposed as `flake.nixosModules.hardware` and selected through `self` like
-# every other module in this repository.
+# exposed as `flake.nixosModules.vm-hardware` and selected through `self` like
+# every other module of the `vm` host in this repository.
 { ... }:
 
 {
-  flake.nixosModules.hardware =
+  flake.nixosModules.vm-hardware =
     { config, lib, pkgs, modulesPath, ... }:
     {
       imports =
