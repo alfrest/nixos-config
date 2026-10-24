@@ -40,6 +40,7 @@ in
       self.nixosModules.home-cli-tools
       self.nixosModules.home-git
       self.nixosModules.home-zsh
+      self.nixosModules.home-gtk
     ];
   };
 }
