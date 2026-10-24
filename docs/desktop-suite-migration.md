@@ -1,7 +1,6 @@
 # Dotfiles migration plan — Ansible (Arch `dsk`) → NixOS `vm`
 
-Status: **migration complete — P15 parity audit green; merge to `main` pending the final
-visual checks in §10**
+Status: **migration complete — P15 parity audit green and merged into `main`**
 Created: 2026-10-24
 Source of truth: `https://github.com/alfrest/ansible-dotfiles` at commit `d75c36b` ("update vault")
 Target repo: `/home/alfrest/nixos-config` (dendritic NixOS flake, host `vm`)
@@ -34,8 +33,7 @@ phases 10–13 touch graphics and login and carry the real lockout risk.
 Branch **`feat/desktop-suite`** was created from `main` and is the branch this plan lives
 on. Baseline verified before any change (see P0). Everything below happens on that
 branch, one commit per phase. `main` stays a known-good, headless-safe configuration
-until P15 passes. P0–P15 are now done on this branch; the merge to `main` happens after
-the final runtime checks in §10.
+until P15 passes. P0–P15 are done on this branch and it has been merged into `main`.
 
 To check you are on the right branch:
 
@@ -1275,8 +1273,8 @@ the machine reachable via SSH.
   `pam_unix(greetd:session): session opened for user alfrest` and
   `gkr-pam: gnome-keyring-daemon started properly and unlocked keyring`. `loginctl` reports
   the session as `Type=wayland`, `TTY=tty1`, `Service=greetd`, and both `niri --session` and
-  `noctalia` are running. **Still pending:** the visual lock/unlock check (`Super+Escape` →
-  password → unlock), which needs the user at the console.
+  `noctalia` are running. The visual lock/unlock check (`Super+Escape` → password → unlock)
+  passed at the console on 2026-10-24 (see P15).
 
 ---
 
@@ -1431,8 +1429,9 @@ unchanged from before the cleanup, which proves the edits are documentation-only
 validate` and `noctalia config validate` are green on the generated files.
 
 **Runtime status:** the post-P13 boot is green for login → niri → keyring → bar (see P13's
-boot test). The only outstanding manual checks are the terminal and the lock/unlock cycle,
-plus the merge to `main` — both left to the user (§10 item 7).
+boot test), and the user confirmed terminal (`Mod+Return` → alacritty) and the lock/unlock
+cycle (`Super+Escape` → password → unlock) at the console. P15 is fully green; the branch is
+merged into `main`.
 
 ---
 
@@ -1455,8 +1454,8 @@ plus the merge to `main` — both left to the user (§10 item 7).
 | P11 niri | done | 09f4d68 | 2026-10-24 | `modules/desktop/niri.nix` + vendored `files/niri/config.kdl` (336 lines, 6 placeholders). `niri validate -c <generated>` → `config is valid`. System packages: `niri`, `xwayland-satellite`, polkit agent (alacritty/playerctl stay per-user). parse/check/dry-build/HM eval exit 0, HM generation built. Session runs on the VM (user-confirmed). |
 | P11b niri output option | done | a2fe87d | 2026-10-24 | `desktop.niri.output` option; VM pins `Virtual-1` + `1920x1200@59.885` from `niri msg outputs`. `niri validate` green with the option set and forced `null`. |
 | P12 noctalia | done | 5318c98 | 2026-10-24 | `modules/desktop/noctalia.nix` + vendored `files/noctalia/config.toml`. Wallpaper D6 = `moonscape`; `polkit_agent = false` (niri keeps the KDE agent). `noctalia config validate` → `✓ Config is valid`; every `msg` subcommand used by the niri binds exists in 5.0.1. parse/check/dry-build/HM eval exit 0. Visual/bar checks pending a graphical session. |
-| P13 greetd | done | 2515924 | 2026-10-24 | `modules/desktop/greetd.nix` only declares enable + text greeter + `--cmd niri-session`; module supplies VT1, `greeter` user, tmpfiles, `autovt@tty1` off. Generated `greetd.toml` and `/etc/pam.d/greetd` (with `pam_gnome_keyring auto_start`) inspected. Console confirmed graphical (wayland session on tty1, no serial console in cmdline). Apply with `nixos-rebuild boot` + reboot — `switch` would kill the live tty1 session. Boot test green: greetd login as `alfrest`, journal `gkr-pam: … unlocked keyring`, `niri --session` + `noctalia` running on tty1. Visual lock/unlock pending. |
-| P15 audit | done | c6aa34f | 2026-10-24 | Full source→Nix diff table recorded in §5 P15 (git, zsh, alacritty, gtk, herdr, nvim, niri, noctalia, tuigreet, package roles). Secret gate clean (only removal comments + avante's env-var *name*); Arch-ism gate only in comments; no duplicate user tools (`vim`/`wget`/`opencode`/`herdr` system-side on purpose). Cleanup was docs/comments only — HM generation store path unchanged. parse/check/dry-build/HM eval green; `niri validate` + `noctalia config validate` green. Runtime lock/unlock + merge to `main` left to the user. |
+| P13 greetd | done | 2515924 | 2026-10-24 | `modules/desktop/greetd.nix` only declares enable + text greeter + `--cmd niri-session`; module supplies VT1, `greeter` user, tmpfiles, `autovt@tty1` off. Generated `greetd.toml` and `/etc/pam.d/greetd` (with `pam_gnome_keyring auto_start`) inspected. Console confirmed graphical (wayland session on tty1, no serial console in cmdline). Apply with `nixos-rebuild boot` + reboot — `switch` would kill the live tty1 session. Boot test green: greetd login as `alfrest`, journal `gkr-pam: … unlocked keyring`, `niri --session` + `noctalia` running on tty1. Visual lock/unlock green. |
+| P15 audit | done | c6aa34f | 2026-10-24 | Full source→Nix diff table recorded in §5 P15 (git, zsh, alacritty, gtk, herdr, nvim, niri, noctalia, tuigreet, package roles). Secret gate clean (only removal comments + avante's env-var *name*); Arch-ism gate only in comments; no duplicate user tools (`vim`/`wget`/`opencode`/`herdr` system-side on purpose). Cleanup was docs/comments only — HM generation store path unchanged. parse/check/dry-build/HM eval green; `niri validate` + `noctalia config validate` green. Runtime terminal + lock/unlock green (user, 2026-10-24); merged to `main`. |
 
 **Blockers:** (none yet — add date, symptom, command output, and what was tried)
 
@@ -1573,6 +1572,7 @@ workstation and are **not** migrated to the VM. The VM has its own explicit outp
    2026-10-24: niri runs on tty1 (`Type=wayland`), and `/proc/cmdline` has no serial console.
 6. Later, outside this plan: if the API keys are wanted back, decide on a secret manager
    (agenix/sops-nix) as a separate migration — do not bolt it onto a phase.
-7. Final sign-off (P15): at the console, verify terminal (`Mod+Return` → alacritty) and the
-   lock/unlock cycle (`Super+Escape` → password → session resumes). Then merge
-   `feat/desktop-suite` → `main` (the repo history keeps the phase commits, so no squash).
+7. ~~Final sign-off (P15): terminal + lock/unlock at the console, then merge.~~ Done
+   2026-10-24: user confirmed `Mod+Return` opens alacritty and `Super+Escape` → password →
+   unlock works. `feat/desktop-suite` merged into `main` (no squash; the phase commits are
+   kept).
