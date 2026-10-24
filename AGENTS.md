@@ -8,13 +8,16 @@ Single-host NixOS flake for a QEMU VM (host `vm`), tracked in git. No CI, tests,
 - `modules/` — auto-imported recursively by `import-tree`. Each file declares exactly one `flake.nixosModules.<name>` feature module (NixOS module inside the flake-parts module); **do not `import` one module from another**, declare it instead. Files/dirs starting with `_` are ignored by `import-tree`.
   - `modules/hosts/vm/default.nix` — defines `flake.nixosConfigurations.vm` by selecting which `self.nixosModules.*` make up the host, and pins the host identity (`networking.hostName = "vm"`). Add a new module to this list to activate it.
   - `modules/hosts/vm/hardware-configuration.nix` — generated machine description from `nixos-generate-config`, wrapped as `nixosModules.vm-hardware`; **never edit the generated settings** (btrfs subvolumes, `qemu-guest.nix`).
-  - `modules/system/` — boot, networking, OpenSSH, packages (`vim`/`wget`/`opencode`/`herdr`), `state-version`.
+  - `modules/system/` — boot, nix daemon settings (`nix-command`/flakes), networking, OpenSSH, packages (`vim`/`wget`/`opencode`/`herdr`), `state-version`.
   - `modules/users/alfrest.nix` — user `alfrest` (`wheel`).
 - `/etc/nixos` is a root-owned copy of the old pre-dendritic layout. Edits here are not live until rebuilt from this directory.
 
 ## Verification is mandatory
 
-Flakes are disabled system-wide (`/etc/nix/nix.conf`), so flake commands need:
+`nix-command` and `flakes` are enabled system-wide by `modules/system/nix.nix`
+(`nix.settings.experimental-features`), so flake commands work without extra
+flags. On a machine still running an older generation (before that module was
+activated), prefix commands with:
 
 ```sh
 export NIX_CONFIG='experimental-features = nix-command flakes'

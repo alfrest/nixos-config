@@ -26,6 +26,7 @@ in
 
       self.nixosModules.vm-hardware
       self.nixosModules.boot
+      self.nixosModules.nix
       self.nixosModules.networking
       self.nixosModules.openssh
       self.nixosModules.packages
