@@ -724,7 +724,7 @@ left in `modules/system/packages.nix` as decided above.
 
 ---
 
-### [ ] P9 — Neovim (vendored LazyVim)
+### [x] P9 — Neovim (vendored LazyVim) (done 2026-10-24)
 
 **Goal:** the same LazyVim setup, pins and custom plugin files.
 
@@ -798,6 +798,23 @@ Gotchas:
   do not add it to the repo root.
 
 Rollback: revert. `~/.config/nvim` becomes a backup on first activation (was absent).
+
+**Outcome (2026-10-24) — what actually landed:**
+- Tree copied with `cp -a` (22 files, `.gitignore`/`.markdownlint.jsonc`/`.neoconf.json`
+  included); `diff -r` against the source is clean and `git ls-files` shows all 22.
+- Linked with `mkOutOfStoreSymlink` to `<homeDirectory>/nixos-config/modules/home/files/nvim`
+  (decision D12, option chosen by the user). `~/.config/nvim` is writable, so the lockfile and
+  `lazyvim.json` are edited in place; **commit those changes**, they are not generated.
+  `lazy.lua` is unmodified.
+- Built HM generation verified: `~/.config/nvim` → store symlink → live repo directory.
+- Packages: `neovim`, `luarocks`, `lazygit`, `gcc`, `gnumake`, `unzip`, `curl`,
+  `tree-sitter`, `python3`. `ripgrep`/`fd`/`nodejs`/`git` already come from P3/P4 and are not
+  repeated. `neovim` + `lazygit` were removed from `modules/system/packages.nix`.
+- The vendored `.gitignore` now applies to that subtree only; it does not ignore
+  `lazy-lock.json`.
+- `lua/plugins/nvim-tmux-navigator.lua` is kept verbatim even though tmux is skipped (P7);
+  the plugin degrades to nvim-only navigation. Candidate for the P15 audit.
+- No JDK: `after/ftplugin/java.lua` stays unexercised until the user asks for `jdk21`.
 
 ---
 
@@ -1197,7 +1214,7 @@ Checklist (each line is a check, not a claim):
 | P6 alacritty | done | 28082c4 | 2026-10-24 | `modules/home/alacritty.nix`; theme via `programs.alacritty.theme = "vscode"`. Generated TOML parsed with `tomllib`: `chars == '\x17'`, size 12, family `JetBrains Mono Nerd Font Mono`, import `vscode.toml`. parse/check/dry-build/HM eval exit 0. Visual check pending a session. |
 | P7 tmux | skipped | 713f185 | 2026-10-24 | User request: tmux no longer used, herdr replaces it. No module created; `tm` alias and `sesh` package removed. |
 | P8 herdr | done | f9c7bd4 | 2026-10-24 | `modules/home/herdr.nix` + verbatim `files/herdr/config.toml` (69 lines, diff clean). Built HM generation links it to `~/.config/herdr/config.toml`. parse/check/dry-build/HM eval exit 0. Runtime `herdr server reload-config` pending user `switch`. |
-| P9 nvim | todo | | | |
+| P9 nvim | done | f9eda5d | 2026-10-24 | `modules/home/nvim.nix` + verbatim `files/nvim` (22 files, `diff -r` clean). Linked with `mkOutOfStoreSymlink` → live repo dir (verified in built HM generation). `neovim`/`lazygit` moved out of system packages. parse/check/dry-build/HM eval exit 0. Runtime `:Lazy`/`:checkhealth` pending user `switch`. |
 | P10 graphics | todo | | | |
 | P14 zen + playerctl | todo | | | must run before P11 |
 | P11 niri | todo | | | |
