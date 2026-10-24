@@ -184,7 +184,8 @@ Module skeleton gotcha: `pkgs` is only in scope inside the **inner** NixOS modul
 
 ## 5. Phases
 
-Legend: `[ ]` todo, `[x]` done, `[~]` in progress, `[!]` blocked.
+Legend: `[ ]` todo, `[x]` done, `[x] … (skipped)` deliberately not migrated, `[~]` in
+progress, `[!]` blocked.
 
 ---
 
@@ -351,6 +352,7 @@ Rollback: revert, rebuild; packages disappear from the per-user profile.
 **Outcome (2026-10-24):** no removal from `modules/system/packages.nix` in this phase —
 none of the P3 packages were there. `git` moves in P4, `neovim`/`lazygit` in P9, and
 `herdr`'s keep-or-move decision is recorded in P8. `vim`, `wget`, `opencode` stay system-wide.
+`sesh` was dropped when P7 (tmux) was skipped — it is a tmux session manager.
 
 ---
 
@@ -469,7 +471,8 @@ Rollback: revert; `chsh` is not needed because the shell is declared.
   `programs.zsh.plugins` with hand-built `src` paths — they are sourced at the correct
   order (1200 / 700) from nixpkgs.
 - vi-mode variables are set with `lib.mkOrder 500` because oh-my-zsh is sourced at order
-  800 and the plugin reads them at load time. `EDITOR`/`tm`/`zoxide` stay at 1000.
+  800 and the plugin reads them at load time. `EDITOR`/`zoxide` stay at 1000; the `tm`
+  alias was removed in P7 (tmux skipped).
 - `history.size = 50000` restores oh-my-zsh's scrollback default (HM defaults to 10000).
 - `programs.zsh.enableGlobalCompInit = false`: oh-my-zsh runs `compinit` itself.
 - `git` removed from `modules/system/packages.nix`; `vim`, `wget`, `lazygit`, `neovim`,
@@ -596,7 +599,13 @@ Rollback: revert.
 
 ---
 
-### [ ] P7 — tmux
+### [x] P7 — tmux (skipped 2026-10-24)
+
+**Skipped on user request:** tmux is not used any more — herdr (P8) is the terminal
+multiplexer now. No `modules/home/tmux.nix` is created, no TPM/plugin migration happens,
+and the tmux-specific leftovers already landed in earlier phases were removed:
+`alias tm='tmux attach || tmux'` from `modules/home/zsh.nix` and the `sesh` package from
+`modules/home/cli-tools.nix`. `roles/tmux/files/tmux.conf` stays in the source repo only.
 
 **Goal:** identical keybinds/theme/plugins, `M-Space` prefix, TPM plugins declared
 declaratively instead of cloned at first start.
@@ -657,7 +666,7 @@ first time).
 
 ---
 
-### [ ] P8 — herdr config
+### [x] P8 — herdr config (done 2026-10-24)
 
 **Goal:** the existing `herdr` package gets its config file (the old repo symlinked
 `~/.config/herdr/config.toml`; the NixOS config installs the binary from
@@ -699,6 +708,10 @@ Gotcha: the existing `modules/system/packages.nix` already pulls
 second copy in `home.packages`, that would create two different store paths.
 
 Rollback: revert; config file is removed on the next HM activation.
+
+**Outcome (2026-10-24):** config vendored verbatim (69 lines, `diff` clean against the
+source) and linked as `~/.config/herdr/config.toml` (store symlink verified in the built HM
+generation). Package left in `modules/system/packages.nix` as decided above.
 
 ---
 
@@ -1168,8 +1181,8 @@ Checklist (each line is a check, not a claim):
 | P4 git + zsh | done | 34579a9 | 2026-10-24 | `modules/home/git.nix` + `modules/home/zsh.nix`; git removed from system packages. Generated `git config`, `.zshrc` (vi-mode vars before omz at 800, plugins `vi-mode git fzf`, syntax/autosuggestion sourced, HISTSIZE 50000) inspected in the built HM generation. parse/check/dry-build/HM eval exit 0. Runtime checks pending user `switch`. |
 | P5 gtk | done | 5e57d6c | 2026-10-24 | `modules/home/gtk.nix` + `programs.dconf.enable`. Runtime verified on the VM: `dconf read` → `'adw-gtk3-dark'`, `'prefer-dark'`, `'Adwaita'`; `~/.config/gtk-3.0/settings.ini` matches. (`gsettings` is absent by design; use `dconf`.) |
 | P6 alacritty | done | 28082c4 | 2026-10-24 | `modules/home/alacritty.nix`; theme via `programs.alacritty.theme = "vscode"`. Generated TOML parsed with `tomllib`: `chars == '\x17'`, size 12, family `JetBrains Mono Nerd Font Mono`, import `vscode.toml`. parse/check/dry-build/HM eval exit 0. Visual check pending a session. |
-| P7 tmux | todo | | | |
-| P8 herdr | todo | | | |
+| P7 tmux | skipped | 713f185 | 2026-10-24 | User request: tmux no longer used, herdr replaces it. No module created; `tm` alias and `sesh` package removed. |
+| P8 herdr | done | f9c7bd4 | 2026-10-24 | `modules/home/herdr.nix` + verbatim `files/herdr/config.toml` (69 lines, diff clean). Built HM generation links it to `~/.config/herdr/config.toml`. parse/check/dry-build/HM eval exit 0. Runtime `herdr server reload-config` pending user `switch`. |
 | P9 nvim | todo | | | |
 | P10 graphics | todo | | | |
 | P14 zen + playerctl | todo | | | must run before P11 |
