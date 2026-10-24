@@ -511,8 +511,12 @@ Only add them if Noctalia actually fails without them (check at P12); note the d
 
 Runtime checks:
 ```sh
-gsettings get org.gnome.desktop.interface gtk-theme     # 'adw-gtk3-dark'
-gsettings get org.gnome.desktop.interface color-scheme  # 'prefer-dark'
+# `gsettings` (from glib) is not in the system profile; `dconf` is, because
+# `programs.dconf.enable` adds it. Read the keys directly from the user db:
+dconf read /org/gnome/desktop/interface/gtk-theme     # 'adw-gtk3-dark'
+dconf read /org/gnome/desktop/interface/color-scheme  # 'prefer-dark'
+# and the generated files:
+cat ~/.config/gtk-3.0/settings.ini
 ```
 
 Gotchas: `gtk.enable` writes `~/.config/gtk-3.0/settings.ini` **and** dconf; do not also
@@ -1152,7 +1156,7 @@ Checklist (each line is a check, not a claim):
 | P2 fonts | done | 87b52de | 2026-10-24 | `modules/home/fonts.nix`; both Nerd Font families kept (open item 1 resolved: include FiraCode for parity). All four attrs verified in locked nixpkgs. parse/check/dry-build/HM eval exit 0. Runtime `fc-list` checks pending user `switch`. |
 | P3 cli tools | done | 3a99edb | 2026-10-24 | `modules/home/cli-tools.nix`; all 12 attrs verified in locked nixpkgs, `rustc`/`cargo` smoke-tested (`rustc 1.95.0`). No system-package dedupe needed. parse/check/dry-build/HM eval exit 0. Runtime `command -v` checks pending user `switch`. |
 | P4 git + zsh | done | 34579a9 | 2026-10-24 | `modules/home/git.nix` + `modules/home/zsh.nix`; git removed from system packages. Generated `git config`, `.zshrc` (vi-mode vars before omz at 800, plugins `vi-mode git fzf`, syntax/autosuggestion sourced, HISTSIZE 50000) inspected in the built HM generation. parse/check/dry-build/HM eval exit 0. Runtime checks pending user `switch`. |
-| P5 gtk | done | 5e57d6c | 2026-10-24 | `modules/home/gtk.nix` + `programs.dconf.enable`; generated `gtk-3.0/settings.ini` and dconf settings inspected (`prefer-dark`, `adw-gtk3-dark`, `Adwaita`). parse/check/dry-build/HM eval exit 0. Runtime `gsettings get` checks pending user `switch`. |
+| P5 gtk | done | 5e57d6c | 2026-10-24 | `modules/home/gtk.nix` + `programs.dconf.enable`. Runtime verified on the VM: `dconf read` → `'adw-gtk3-dark'`, `'prefer-dark'`, `'Adwaita'`; `~/.config/gtk-3.0/settings.ini` matches. (`gsettings` is absent by design; use `dconf`.) |
 | P6 alacritty | todo | | | |
 | P7 tmux | todo | | | |
 | P8 herdr | todo | | | |
