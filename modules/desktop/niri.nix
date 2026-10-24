@@ -24,9 +24,9 @@
 #   - every other bind, the input/layout/gestures sections and the screenshot
 #     path are verbatim.
 #
-# No login change yet: this phase only makes the session startable by hand
-# (`niri-session` from a TTY). greetd follows in P13; `niri-session` comes from
-# this package.
+# Login: greetd runs `${pkgs.niri}/bin/niri-session` as the session command
+# (modules/desktop/greetd.nix). The same command can still be started by hand
+# from a TTY when debugging a login problem.
 #
 # Package placement: `alacritty` and `playerctl` are already in the per-user
 # profile (P6/P14) and are spawned by absolute path, so they are not repeated

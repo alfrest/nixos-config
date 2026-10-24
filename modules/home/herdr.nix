@@ -16,9 +16,10 @@
 # `files/` contains no `.nix` files, so `import-tree` does not descend into it.
 #
 # The `herdr` package itself stays in modules/system/packages.nix
-# (`pkgs-unstable.herdr`). Installing it here as well would pull a second copy
-# from stable `pkgs` and end up with two different store paths; moving it to the
-# per-user profile is a P15 cleanup decision, not part of this phase.
+# (`pkgs-unstable.herdr`, recorded as the P15 audit decision). Installing it here
+# would either pull a second copy from stable `pkgs` (a different store path) or
+# require threading `pkgs-unstable` into this Home Manager module; the binary is
+# also usable outside a login session. Only the config is per-user.
 { ... }:
 
 {

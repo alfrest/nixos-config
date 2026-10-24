@@ -14,8 +14,8 @@
 # succeed during activation — Home Manager's dconf module says so explicitly.
 #
 # The `python-*` packages were runtime dependencies of the Arch shell setup,
-# not settings; they are not migrated here (revisit in P12 if Noctalia needs
-# them).
+# not settings. They are not migrated: noctalia 5.0.1 starts and validates
+# without them, so no Python packages are added for GTK.
 { ... }:
 
 {

@@ -1,7 +1,7 @@
 # Graphics prerequisites for a Wayland session on this VM.
 #
-# This phase deliberately does not touch getty/greetd or start anything at boot:
-# it only makes a niri session *possible*. Login changes come in P13.
+# This module only makes a Wayland session *possible*: it starts nothing at
+# boot. greetd (modules/desktop/greetd.nix) is what launches the session.
 #
 # Verified before writing this module: /dev/dri exposes `card1` (Virtual-1) and
 # `renderD128`, so Mesa/EGL can work with the VM's virtio-gpu (decision D1).
@@ -9,7 +9,7 @@
 # `hardware.graphics.enable` is the 26.05 name (`hardware.opengl` is gone).
 # Do not add `services.xserver`: niri is not an X11 session, and a second
 # display stack can steal the TTY. X11 apps go through xwayland-satellite,
-# which P11 installs.
+# which the niri module installs.
 { ... }:
 
 {
@@ -18,7 +18,7 @@
     {
       hardware.graphics.enable = true;
 
-      # greetd's PAM stack unlocks this at login (P13); harmless before that.
+      # greetd's PAM stack unlocks this at login (see modules/desktop/greetd.nix).
       services.gnome.gnome-keyring.enable = true;
 
       # Default is true; stated explicitly because the niri session relies on it.
