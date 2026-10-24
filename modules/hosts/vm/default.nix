@@ -55,6 +55,7 @@ in
       self.nixosModules.desktop-graphics
       self.nixosModules.desktop-niri
       self.nixosModules.desktop-noctalia
+      self.nixosModules.desktop-greetd
 
       # Per-user feature modules (Home Manager).
       self.nixosModules.home-xdg-user-dirs
