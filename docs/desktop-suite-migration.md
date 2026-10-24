@@ -201,7 +201,7 @@ Rollback: `git switch main`.
 
 ---
 
-### [ ] P1 — XDG user dirs + screenshots dir
+### [x] P1 — XDG user dirs + screenshots dir (done 2026-10-24)
 
 **Goal:** `~/Desktop`, `~/Documents`, `~/Downloads`, `~/Pictures`, `~/Videos`, `~/Music`,
 plus `~/Pictures/Screenshots` because the niri config points there.
@@ -1114,7 +1114,7 @@ Checklist (each line is a check, not a claim):
 | Phase | Status | Commit | Date | Notes / verification evidence |
 | --- | --- | --- | --- | --- |
 | P0 branch + baseline | done | branch base | `feat/desktop-suite` created; parse, `nix flake check`, `dry-build` all green |
-| P1 xdg dirs | todo | | | |
+| P1 xdg dirs | done | 942c08b | 2026-10-24 | `modules/home/xdg-user-dirs.nix` + host list; parse, `nix flake check`, `dry-build`, HM `activationPackage` eval all exit 0. Runtime checks pending user `switch`. |
 | P2 fonts | todo | | | |
 | P3 cli tools | todo | | | |
 | P4 git + zsh | todo | | | |
