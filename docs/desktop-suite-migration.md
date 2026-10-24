@@ -477,7 +477,7 @@ Rollback: revert; `chsh` is not needed because the shell is declared.
 
 ---
 
-### [ ] P5 — GTK theme + dconf
+### [x] P5 — GTK theme + dconf (done 2026-10-24)
 
 **Goal:** `adw-gtk3-dark`, prefer-dark, same icon/font defaults.
 
@@ -520,6 +520,13 @@ set `environment.sessionVariables.GTK_THEME`. `gtk4` needs `gtk.gtk4.theme` only
 app misbehaves — start without it.
 
 Rollback: revert (dconf keys revert on the next HM activation).
+
+**Outcome (2026-10-24):** `programs.dconf.enable = true` had to be added on the NixOS side —
+Home Manager's dconf module requires it or activation logs a systemd error and the
+`prefer-dark` key never lands. `gtk.colorScheme` only accepts `"dark"`/`"light"`; `"dark"`
+is what produces `color-scheme = prefer-dark`. `adw-gtk3` is not repeated in
+`home.packages` because `gtk.theme.package` installs it. Evaluated dconf settings:
+`{color-scheme=prefer-dark, gtk-theme=adw-gtk3-dark, icon-theme=Adwaita}`.
 
 ---
 
@@ -1145,7 +1152,7 @@ Checklist (each line is a check, not a claim):
 | P2 fonts | done | 87b52de | 2026-10-24 | `modules/home/fonts.nix`; both Nerd Font families kept (open item 1 resolved: include FiraCode for parity). All four attrs verified in locked nixpkgs. parse/check/dry-build/HM eval exit 0. Runtime `fc-list` checks pending user `switch`. |
 | P3 cli tools | done | 3a99edb | 2026-10-24 | `modules/home/cli-tools.nix`; all 12 attrs verified in locked nixpkgs, `rustc`/`cargo` smoke-tested (`rustc 1.95.0`). No system-package dedupe needed. parse/check/dry-build/HM eval exit 0. Runtime `command -v` checks pending user `switch`. |
 | P4 git + zsh | done | 34579a9 | 2026-10-24 | `modules/home/git.nix` + `modules/home/zsh.nix`; git removed from system packages. Generated `git config`, `.zshrc` (vi-mode vars before omz at 800, plugins `vi-mode git fzf`, syntax/autosuggestion sourced, HISTSIZE 50000) inspected in the built HM generation. parse/check/dry-build/HM eval exit 0. Runtime checks pending user `switch`. |
-| P5 gtk | todo | | | |
+| P5 gtk | done | 5e57d6c | 2026-10-24 | `modules/home/gtk.nix` + `programs.dconf.enable`; generated `gtk-3.0/settings.ini` and dconf settings inspected (`prefer-dark`, `adw-gtk3-dark`, `Adwaita`). parse/check/dry-build/HM eval exit 0. Runtime `gsettings get` checks pending user `switch`. |
 | P6 alacritty | todo | | | |
 | P7 tmux | todo | | | |
 | P8 herdr | todo | | | |
