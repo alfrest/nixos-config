@@ -19,6 +19,7 @@
 #   - GEMINI_API_KEY / GROQ_API_KEY / OPENROUTER_API_KEY (Ansible Vault)
 #   - SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/rbw/... (Bitwarden rbw agent)
 #   - PATH="$HOME/.config/emacs/bin:$PATH" (no emacs, decision D3)
+#   - alias tm='tmux attach || tmux' (tmux is not migrated, user runs herdr)
 #
 # Path change: because `xdg.enable` is on (P1), Home Manager puts the rc files
 # in `~/.config/zsh/` and sets `ZDOTDIR`, instead of the source's `~/.zshrc` /
@@ -76,8 +77,6 @@
             else
               export EDITOR='nvim'
             fi
-
-            alias tm='tmux attach || tmux'
 
             eval "$(zoxide init zsh)"
           '')

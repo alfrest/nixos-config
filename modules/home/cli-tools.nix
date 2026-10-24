@@ -8,7 +8,8 @@
 # Package mapping from the source role:
 #   Arch `rust`       -> `rustc` + `cargo` (there is no `rust` attribute)
 #   Arch `npm`        -> `nodejs` (ships npm; there is no `npm` attribute)
-#   AUR `sesh-bin`    -> `sesh`
+# AUR `sesh-bin` is dropped: sesh is a tmux session manager and tmux is not
+# migrated (herdr replaces it, see P7/P8).
 # `fd` is simply `fd` here, so the old `/usr/local/bin/fd` symlink workaround
 # for Debian-style `fdfind` disappears entirely.
 { ... }:
@@ -29,7 +30,6 @@
         wl-clipboard
         yazi
         zoxide
-        sesh
       ];
     };
 }
