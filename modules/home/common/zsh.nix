@@ -58,10 +58,6 @@
             eval "$(zoxide init zsh)"
           '')
         ];
-
-        sessionVariables = {
-          QT_QPA_PLATFORMTHEME = "xdgdesktopportal";
-        };
       };
     };
 }

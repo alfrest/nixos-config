@@ -151,6 +151,11 @@ Target layout (new directory `modules/desktop/` for system-level desktop pieces,
 `modules/home/` for per-user config). Every row = one new file exposing exactly one
 `flake.nixosModules.<name>`.
 
+> **Layout update (2026-10-25):** `modules/home/` was later split into `common/`
+> (headless-safe) and `gui/`, and `modules/meta/` now provides the `base` and
+> `desktop` aggregate modules. The paths below are the original phase plan; module
+> names are unchanged.
+
 | Phase | Source role / file | New module file | Module name |
 | --- | --- | --- | --- |
 | P1 | `roles/xdg_user_dirs` | `modules/home/xdg-user-dirs.nix` | `home-xdg-user-dirs` |

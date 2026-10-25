@@ -2,7 +2,7 @@
 
 ## What this repo is
 
-Single-host NixOS flake for a QEMU VM (host `vm`), tracked in git. No CI, tests, or linter — Nix evaluation is the check. Uses the dendritic pattern: flake-parts + `import-tree`, where every file under `modules/` is itself a flake-parts module.
+NixOS flake for a QEMU VM (host `vm`), tracked in git, structured so a future headless host can reuse the common modules. No CI, tests, or linter — Nix evaluation is the check. Uses the dendritic pattern: flake-parts + `import-tree`, where every file under `modules/` is itself a flake-parts module.
 
 - `flake.nix` — minimal entrypoint. `flake-parts.lib.mkFlake` evaluates `import-tree ./modules`; outputs are `flake.nixosConfigurations.vm` and the `flake.nixosModules.*` set. `nixpkgs` is pinned to `nixos-26.05`; `nixpkgs-unstable` is a second input used only for the fast-moving tools in `modules/system/packages.nix` (modules see it as `pkgs-unstable`). `zen-browser` is a third input, passed down as the `zen-browser` argument.
 - `modules/` — auto-imported recursively by `import-tree`. Each file declares exactly one `flake.nixosModules.<name>` feature module (NixOS module inside the flake-parts module); **do not `import` one module from another**, declare it instead. Files/dirs starting with `_` are ignored by `import-tree`.
@@ -10,8 +10,10 @@ Single-host NixOS flake for a QEMU VM (host `vm`), tracked in git. No CI, tests,
   - `modules/hosts/vm/hardware-configuration.nix` — generated machine description from `nixos-generate-config`, wrapped as `nixosModules.vm-hardware`; **never edit the generated settings** (btrfs subvolumes, `qemu-guest.nix`).
   - `modules/system/` — boot, nix daemon settings (`nix-command`/flakes), networking, OpenSSH, packages (`vim`/`wget`/`opencode`/`herdr`), `state-version`, Home Manager integration.
   - `modules/users/alfrest.nix` — user `alfrest` (`wheel`) and its Home Manager base (`home.stateVersion`).
-  - `modules/home/` — per-user feature modules, all writing under `home-manager.users.alfrest` (xdg dirs, fonts, cli tools, git, zsh, gtk, alacritty, herdr, media, nvim). User tools belong in `home.packages` here, not in `modules/system/packages.nix`.
+  - `modules/home/common/` — per-user feature modules that work without a graphical session (xdg dirs, fonts, cli tools, git, zsh, herdr, nvim). User tools belong in `home.packages` here, not in `modules/system/packages.nix`.
+  - `modules/home/gui/` — per-user modules that need a graphical session (gtk, alacritty, media/zen, wl-clipboard).
   - `modules/desktop/` — system-level desktop pieces: `graphics.nix` (Mesa, keyring, polkit, portals), `niri.nix` (compositor, the `desktop.niri.output` option, generated KDL), `noctalia.nix` (bar/shell), `greetd.nix` (login → `niri-session`).
+  - `modules/meta/` — meta modules that only `imports` other `self.nixosModules.*` entries: `system-common` (non-GUI system defaults), `home-common` (non-GUI Home Manager modules), `home-gui` (GUI Home Manager modules), `base` (`system-common` + `home-common`) and `desktop` (system desktop pieces + `home-gui`). Hosts import `base`, and GUI hosts additionally `desktop`; add a feature to the relevant meta module to give it to every host in that class.
   - `modules/{home,desktop}/files/` — vendored config data (no `.nix` files, so `import-tree` ignores it). Two wiring conventions: files that must stay editable are linked with `lib.file.mkOutOfStoreSymlink` to this live checkout (`herdr`, `nvim`; assumes the repo stays at `/home/alfrest/nixos-config`), while files whose content Nix must rewrite for store paths use `text =` with `builtins.readFile` + `replaceStrings` (`niri`, `noctalia`).
 - `/etc/nixos` is a root-owned copy of the old pre-dendritic layout. Edits here are not live until rebuilt from this directory.
 

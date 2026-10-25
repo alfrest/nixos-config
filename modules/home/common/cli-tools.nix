@@ -18,7 +18,6 @@
         rustc
         cargo
         unzip
-        wl-clipboard
         yazi
         zoxide
       ];

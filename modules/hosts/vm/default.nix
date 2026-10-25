@@ -27,33 +27,16 @@ in
         };
       }
 
+      # Machine-specific description and boot loader.
       self.nixosModules.vm-hardware
       self.nixosModules.boot
-      self.nixosModules.nix
-      self.nixosModules.networking
-      self.nixosModules.openssh
-      self.nixosModules.packages
-      self.nixosModules.state-version
-      self.nixosModules.home-manager
-      self.nixosModules.user-alfrest
 
-      # System-level desktop pieces (Wayland session, login).
-      self.nixosModules.desktop-graphics
-      self.nixosModules.desktop-niri
-      self.nixosModules.desktop-noctalia
-      self.nixosModules.desktop-greetd
+      # Defaults every host shares (system + non-GUI Home Manager modules).
+      self.nixosModules.base
 
-      # Per-user feature modules (Home Manager).
-      self.nixosModules.home-xdg-user-dirs
-      self.nixosModules.home-fonts
-      self.nixosModules.home-cli-tools
-      self.nixosModules.home-git
-      self.nixosModules.home-zsh
-      self.nixosModules.home-gtk
-      self.nixosModules.home-alacritty
-      self.nixosModules.home-herdr
-      self.nixosModules.home-media
-      self.nixosModules.home-nvim
+      # Graphical stack: niri, greetd, noctalia and the GUI Home Manager
+      # modules. A headless host would stop here instead.
+      self.nixosModules.desktop
     ];
   };
 }

@@ -31,6 +31,10 @@
 
         # Adwaita variants; `gtk.theme.package` already provides adw-gtk3.
         home.packages = [ pkgs.gnome-themes-extra ];
+
+        # Qt apps use the desktop portal for their theme. Meaningless without a
+        # graphical session, so it lives with the GUI modules.
+        home.sessionVariables.QT_QPA_PLATFORMTHEME = "xdgdesktopportal";
       };
     };
 }
