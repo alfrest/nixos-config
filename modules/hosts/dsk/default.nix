@@ -37,6 +37,9 @@ in
       # Graphical stack: niri, greetd, noctalia and the GUI Home Manager
       # modules. A headless host would stop here instead.
       self.nixosModules.desktop
+
+      # RTX 3070: NVIDIA driver instead of the VM's virtio-gpu stack.
+      self.nixosModules.desktop-nvidia
     ];
   };
 }
