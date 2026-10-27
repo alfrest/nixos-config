@@ -11,6 +11,7 @@
       imports = [
         self.nixosModules.nix
         self.nixosModules.networking
+        self.nixosModules.locale
         self.nixosModules.openssh
         self.nixosModules.secrets
         self.nixosModules.packages

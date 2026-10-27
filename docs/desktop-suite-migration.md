@@ -981,8 +981,9 @@ Gotchas:
   user and let it read `$XDG_CONFIG_HOME/niri/config.kdl`. If the subcommand is missing,
   rely on `niri-session` + journal.
 - `spawn-sh` needs `/bin/sh` — present on NixOS.
-- Keyboard layout is `se`; keep it unless the user says otherwise (VM console layout is
-  separate and may still be `us` until greetd starts, which is normal).
+- Keyboard layout is `se`; keep it unless the user says otherwise. The TTY/console
+  layout is set separately by `modules/system/locale.nix` (`console.keyMap =
+  "sv-latin1"`), which also pins `time.timeZone` — niri's KDL only covers the session.
 - `focus-follows-mouse max-scroll-amount="0%"` and `warp-mouse-to-focus` behave oddly in
   a VM with a tablet pointer; if the cursor warps constantly, that is a VM input-device
   issue, not a config error. Note it, do not "fix" the config.
