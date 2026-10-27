@@ -22,7 +22,7 @@
 
         # The scheme is dark; this only tells targets which variant to pick.
         polarity = "dark";
-        base16Scheme = "${pkgs.base16-schemes}/share/themes/horizon-dark.yaml";
+        base16Scheme = "${pkgs.base16-schemes}/share/themes/kanagawa-dragon.yaml";
       };
 
       # `stylix.homeManagerIntegration.autoImport` imports the Home Manager
