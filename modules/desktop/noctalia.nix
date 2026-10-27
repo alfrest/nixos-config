@@ -12,7 +12,7 @@
   flake.nixosModules.desktop-noctalia =
     { pkgs, ... }:
     let
-      wallpaper = pkgs.nixos-artwork.wallpapers.moonscape.gnomeFilePath;
+      wallpaper = pkgs.nixos-artwork.wallpapers.binary-black.gnomeFilePath;
 
       config = builtins.replaceStrings
         [ "@WALLPAPER_DIR@" "@WALLPAPER@" ]
