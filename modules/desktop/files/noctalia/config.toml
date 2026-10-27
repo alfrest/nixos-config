@@ -26,7 +26,7 @@ polkit_agent = true
 
 [theme]
 source = "community"
-community_palette = "ADW"
+community_palette = "Kanagawa Dragon"
 
 [wallpaper]
 directory = "@WALLPAPER_DIR@"
