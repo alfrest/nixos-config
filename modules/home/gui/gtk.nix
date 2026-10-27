@@ -1,5 +1,6 @@
-# GTK appearance. Home Manager writes both `~/.config/gtk-{3,4}.0/settings.ini`
-# and the matching `org/gnome/desktop/interface` dconf keys.
+# GTK appearance. Stylix owns the theme name/palette and the generated
+# `gtk-{3,4}.0/gtk.css` (`modules/desktop/stylix.nix`); do not set
+# `gtk.theme` here or the two modules conflict.
 #
 # `colorScheme = "dark"` is what produces `prefer-dark` in dconf; the option only
 # accepts `"dark"` / `"light"`. `programs.dconf.enable` (system half) is
@@ -16,11 +17,6 @@
         gtk = {
           enable = true;
 
-          theme = {
-            name = "adw-gtk3-dark";
-            package = pkgs.adw-gtk3;
-          };
-
           iconTheme = {
             name = "Adwaita";
             package = pkgs.adwaita-icon-theme;
@@ -28,13 +24,6 @@
 
           colorScheme = "dark";
         };
-
-        # Adwaita variants; `gtk.theme.package` already provides adw-gtk3.
-        home.packages = [ pkgs.gnome-themes-extra ];
-
-        # Qt apps use the desktop portal for their theme. Meaningless without a
-        # graphical session, so it lives with the GUI modules.
-        home.sessionVariables.QT_QPA_PLATFORMTHEME = "xdgdesktopportal";
       };
     };
 }

@@ -24,6 +24,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # GTK/Qt theming from one base16 palette. The release branch must match
+    # nixpkgs and home-manager (Stylix warns otherwise); only the GTK and Qt
+    # targets are enabled, in modules/desktop/stylix.nix.
+    stylix = {
+      url = "github:nix-community/stylix/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Zen browser; not in nixpkgs. Both `follows` avoid evaluating a second
     # nixpkgs/home-manager. Only `packages.<system>.default` is used, so keep
     # that attribute name stable (it is the `beta` variant, binary `zen-beta`).

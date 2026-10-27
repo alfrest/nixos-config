@@ -8,6 +8,7 @@
     {
       imports = [
         self.nixosModules.desktop-graphics
+        self.nixosModules.desktop-stylix
         self.nixosModules.desktop-niri
         self.nixosModules.desktop-noctalia
         self.nixosModules.desktop-greetd
