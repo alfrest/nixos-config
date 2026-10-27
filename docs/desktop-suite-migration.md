@@ -124,6 +124,11 @@ Nothing from the vault, nothing from Bitwarden, no API keys, no passwords, no SS
 socket. If a future session finds itself needing one, stop and ask the user — do not
 invent a placeholder secret mechanism (agenix/sops) as part of this migration.
 
+> **Superseded (2026-10-27, D13):** the migration itself still carries no secrets, but
+> the user asked for the mechanism to exist ahead of time. sops-nix is now wired in
+> (`modules/system/secrets.nix`, `.sops.yaml`, `docs/secrets.md`); still add **no
+> secret values** here until a real one is needed.
+
 ---
 
 ## 3. Decisions already taken (do not re-open without the user)
@@ -142,6 +147,7 @@ invent a placeholder secret mechanism (agenix/sops) as part of this migration.
 | D10 | GTK settings go through `gtk.*` (Home Manager) which writes dconf, replacing the `community.general.dconf` task. | |
 | D11 | `waybar` stays out (see scope), `arch-distrobox`/`yay`/`aur_builder` are not recreated. | |
 | D12 | Config files that need **no** Nix interpolation are linked with `mkOutOfStoreSymlink` to the file in this checkout, not copied into the store. | User preference: edits are live and the file stays editable. The path is `<homeDirectory>/nixos-config/...`, i.e. the repo must stay at `/home/alfrest/nixos-config`. Inside a flake `./files/...` is a read-only store copy, so it cannot be used as the link target. Interpolation-heavy configs (niri, noctalia) still get `readFile` + `replaceStrings`, which is substitution, not merging. |
+| D13 | **sops-nix**, keyed on each host's ed25519 **SSH host key**; recipients live in `.sops.yaml`; `secrets/common.yaml` is shared, `secrets/<host>.yaml` is machine-only. | Public repo ⇒ ciphertext only in git, no private key committed, nothing secret in the store. Host keys already exist, so no extra material to provision; the cost is re-keying after a reinstall (`sops updatekeys`/`rotate`) and per-file (not per-key) recipient granularity. Runbook: `docs/secrets.md`. No secrets exist yet. |
 
 ---
 

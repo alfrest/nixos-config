@@ -1,0 +1,53 @@
+# Recipients for the sops-encrypted files in ./secrets. Recipients are public
+# keys, so this file is safe to commit. A machine's recipient is derived from
+# its ed25519 SSH host key, which is also what it decrypts with:
+#
+#   ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub
+#
+# The rules below are the access control, not documentation: sops encrypts each
+# file to the union of recipients for the matching rule, so
+#   secrets/common.yaml  -> every host's anchor   (shared)
+#   secrets/<host>.yaml  -> that host's anchor    (machine only)
+# A host that is not a recipient cannot read the file, and a rebuild that tries
+# to use it fails at activation.
+#
+# After changing a recipient:
+#   sops updatekeys secrets/<file>.yaml   # add a key
+#   sops rotate -i secrets/<file>.yaml    # remove a key: updatekeys alone keeps
+#                                         # the old data key readable
+keys:
+  # vm — `ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub` on the running VM.
+  - &vm age13phz4gyw7appdh3j55jpw0hg7ge830ugmwgs684xyqc5vs8rndpqgv6yje
+
+  # dsk — TODO: fill in once dsk has a host key, e.g.
+  #   ssh-keyscan -t ed25519 dsk | ssh-to-age
+  # - &dsk age1...
+
+  # srv — TODO: fill in once srv is installed (docs/secrets.md → "Adding srv").
+  # - &srv age1...
+
+  # Optional: your own key, so you can edit secrets from a workstation without
+  # root on a host. Fill in, uncomment, and add it to the rules you want:
+  #   ssh-to-age < ~/.ssh/id_ed25519.pub
+  # - &alfrest age1...
+
+creation_rules:
+  # Shared by every host. Add *dsk and *srv here when those hosts come online,
+  # then run `sops updatekeys secrets/common.yaml`.
+  - path_regex: secrets/common\.yaml$
+    age:
+      - *vm
+
+  # Machine-only files: exactly one recipient.
+  - path_regex: secrets/vm\.yaml$
+    age:
+      - *vm
+
+  # - path_regex: secrets/dsk\.yaml$
+  #   age:
+  #     - *dsk
+
+  # srv: SMB credentials and other host-only secrets (docs/secrets.md).
+  # - path_regex: secrets/srv\.yaml$
+  #   age:
+  #     - *srv

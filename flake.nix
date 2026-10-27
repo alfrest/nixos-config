@@ -16,6 +16,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Secret management. Encrypted files live in `./secrets`; each host decrypts
+    # them at activation with its own SSH host key. Nothing secret is ever in the
+    # store or in git. Layout and runbook: docs/secrets.md.
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Zen browser; not in nixpkgs. Both `follows` avoid evaluating a second
     # nixpkgs/home-manager. Only `packages.<system>.default` is used, so keep
     # that attribute name stable (it is the `beta` variant, binary `zen-beta`).

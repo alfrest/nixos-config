@@ -15,6 +15,12 @@
         # because Home Manager modules only see stable `pkgs`.
         pkgs-unstable.opencode
         pkgs-unstable.herdr
+
+        # Editing secrets. Kept system-wide so `sudo sops secrets/...` works
+        # with the host key and without a Home Manager generation; ssh-to-age
+        # derives a host's recipient (see docs/secrets.md).
+        sops
+        ssh-to-age
       ];
     };
 }

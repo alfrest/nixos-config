@@ -12,6 +12,7 @@
         self.nixosModules.nix
         self.nixosModules.networking
         self.nixosModules.openssh
+        self.nixosModules.secrets
         self.nixosModules.packages
         self.nixosModules.state-version
         self.nixosModules.home-manager
