@@ -7,7 +7,6 @@
     {
       imports = [
         self.nixosModules.home-xdg-user-dirs
-        self.nixosModules.home-fonts
         self.nixosModules.home-cli-tools
         self.nixosModules.home-git
         self.nixosModules.home-zsh

@@ -6,7 +6,6 @@
     { ... }:
     {
       imports = [
-        self.nixosModules.home-gtk
         self.nixosModules.home-alacritty
         self.nixosModules.home-media
         self.nixosModules.home-clipboard

@@ -24,9 +24,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # GTK/Qt theming from one base16 palette. The release branch must match
-    # nixpkgs and home-manager (Stylix warns otherwise); only the GTK and Qt
-    # targets are enabled, in modules/desktop/stylix.nix.
+    # GTK/Qt theming, fonts, icons and cursor from one base16 palette. The
+    # release branch must match nixpkgs and home-manager (Stylix warns
+    # otherwise); the enabled targets are listed in modules/desktop/stylix.nix.
     stylix = {
       url = "github:nix-community/stylix/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
