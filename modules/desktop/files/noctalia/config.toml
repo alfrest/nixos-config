@@ -22,7 +22,7 @@ up = [ "Up", "Ctrl+p" ]
 
 [shell]
 font_family = "Inter"
-polkit_agent = false
+polkit_agent = true
 
 [theme]
 source = "community"
