@@ -4,6 +4,9 @@
 // `@NAME@` placeholders; the module expands them with `replaceStrings` to
 // absolute store paths, so no bind depends on PATH.
 //
+// `@MOUSE_ACCEL@` expands to the `accel-speed` line of the `mouse` section, from
+// `desktop.niri.mouse.accelSpeed` (host-specific pointer sensitivity).
+//
 // The output placeholder expands to the `output` block of the host's display,
 // built from `desktop.niri.output` in `modules/hosts/vm/default.nix`: on this
 // VM `output "Virtual-1" { mode "1920x1200@59.885" scale 1 ... }`. Hosts that
@@ -38,7 +41,7 @@ input {
     mouse {
         // off
         // natural-scroll
-        accel-speed -0.6
+        @MOUSE_ACCEL@
         // accel-profile "flat"
         // scroll-method "no-scroll"
     }

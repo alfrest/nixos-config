@@ -1510,7 +1510,9 @@ relative to `https://github.com/alfrest/ansible-dotfiles` (`d75c36b`).
 
 ### niri
 - `xkb layout "se"`, `numlock`, `click-method "clickfinger"`, `natural-scroll`,
-  mouse `accel-speed -0.6`, `warp-mouse-to-focus`, `focus-follows-mouse max-scroll-amount="0%"`.
+  mouse `accel-speed -0.6` (default; `dsk` lowers it to `-0.9` through
+  `desktop.niri.mouse.accelSpeed`), `warp-mouse-to-focus`,
+  `focus-follows-mouse max-scroll-amount="0%"`.
 - VM output (from `niri msg outputs`): `Virtual-1`, mode `1920x1200@59.885`, scale `1`,
   transform `normal`, position `x=0 y=0`; no VRR (not supported). Set through the
   `desktop.niri.output` option in `modules/hosts/vm/default.nix`, not in the KDL file.

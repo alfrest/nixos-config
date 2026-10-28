@@ -32,8 +32,17 @@
 
       outputBlock = if cfg.output == null then "" else "\n" + renderOutput cfg.output;
 
+      # libinput wants a float. `toString` renders six decimals ("-0.900000"),
+      # `toJSON` gives the shortest form but drops the point for whole numbers
+      # ("-1"), which niri's float parser would reject.
+      accelSpeedStr =
+        let
+          s = builtins.toJSON cfg.mouse.accelSpeed;
+        in
+        if lib.hasInfix "." s then s else "${s}.0";
+
       configFile = builtins.replaceStrings
-        [ "@NOCTALIA@" "@POLKIT@" "@TERMINAL@" "@BROWSER@" "@PLAYERCTL@" "@OUTPUT@" ]
+        [ "@NOCTALIA@" "@POLKIT@" "@TERMINAL@" "@BROWSER@" "@PLAYERCTL@" "@OUTPUT@" "@MOUSE_ACCEL@" ]
         [
           "${pkgs.noctalia}/bin/noctalia"
           "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1"
@@ -41,6 +50,7 @@
           "${zen-browser}/bin/zen-beta"
           "${pkgs.playerctl}/bin/playerctl"
           outputBlock
+          "accel-speed ${accelSpeedStr}"
         ]
         (builtins.readFile ./files/niri/config.kdl);
     in
@@ -109,6 +119,22 @@
             name = "Virtual-1";
             mode = "1920x1200@59.885";
           }
+        '';
+      };
+
+      options.desktop.niri.mouse.accelSpeed = lib.mkOption {
+        type = lib.types.float;
+        default = -0.6;
+        example = -0.9;
+        description = ''
+          Pointer sensitivity for physical mice, written as `accel-speed` in the
+          `mouse` section of the niri config. libinput's normalized range is
+          -1.0 … 1.0 (0 = 1:1 movement).
+
+          It is not a straight multiplier: with the default adaptive profile,
+          libinput caps the pointer at `2.0 + 1.5 × accel-speed` times the
+          nominal speed (`-0.6` → 1.1x, `-0.9` → 0.65x). To halve the current
+          feel, lower the value rather than scaling it by 0.5.
         '';
       };
 
