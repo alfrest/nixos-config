@@ -19,15 +19,6 @@ NixOS flake for a QEMU VM (host `vm`), tracked in git, structured so a future he
 - `secrets/` + `.sops.yaml` — sops-nix ciphertext and its recipients (public keys). `secrets/common.yaml` is shared by every host, `secrets/<host>.yaml` is decryptable by that host's own ed25519 SSH host key only. `modules/system/secrets.nix` is the wiring (part of `system-common`); it holds no secret material. Never commit plaintext or a private key; runbook in `docs/secrets.md`.
 - `/etc/nixos` is a root-owned copy of the old pre-dendritic layout. Edits here are not live until rebuilt from this directory.
 
-## Desktop suite migration
-
-The Arch workstation dotfiles (`https://github.com/alfrest/ansible-dotfiles`) were ported
-phase by phase on branch `feat/desktop-suite`: greetd logs into niri, noctalia draws the bar,
-and the user tools live under `modules/home/`. `docs/desktop-suite-migration.md` holds the
-phase plan, decisions, risk register, progress log and the P15 parity audit. Read that file
-(section 0 first) before changing anything desktop-, graphics-, or login-related, and update
-its progress table when a phase lands.
-
 ## Verification is mandatory
 
 `nix-command` and `flakes` are enabled system-wide by `modules/system/nix.nix`

@@ -6,11 +6,8 @@
 # `/usr/share/backgrounds/archlinux/gritty.png`, which does not exist on NixOS.
 # On this VM they point at the NixOS `moonscape` artwork in the store (D6).
 #
-# One deliberate change, see plan §5 P12: `polkit_agent` is `false` here. The
-# old config had `true` *and* the niri config spawned the KDE agent, i.e. two
-# authentication agents. The migrated niri config keeps the KDE spawn (parity
-# with the old machine, and it survives a shell restart), so noctalia's embedded
-# agent stays off. Do not turn both on.
+# `polkit_agent` stays `false`: the niri config spawns the KDE agent, and running
+# both gives two authentication prompts. Do not turn both on.
 
 [bar.default]
 margin_ends = 0
