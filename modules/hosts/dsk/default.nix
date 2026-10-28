@@ -1,4 +1,3 @@
-# Host aggregate: selects the modules that make up `dsk`.
 { self, inputs, ... }:
 
 let
@@ -31,21 +30,15 @@ in
         desktop.niri.mouse.accelSpeed = -0.9;
       }
 
-      # Machine-specific description and boot loader.
       self.nixosModules.dsk-hardware
       self.nixosModules.boot
 
-      # Defaults every host shares (system + non-GUI Home Manager modules).
       self.nixosModules.base
 
-      # Graphical stack: niri, greetd, noctalia and the GUI Home Manager
-      # modules. A headless host would stop here instead.
       self.nixosModules.desktop
 
-      # RTX 3070: NVIDIA driver instead of the VM's virtio-gpu stack.
       self.nixosModules.desktop-nvidia
 
-      # RGB lighting.
       self.nixosModules.desktop-openrgb
     ];
   };

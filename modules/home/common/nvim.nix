@@ -20,7 +20,6 @@
           neovim
           luarocks
           lazygit
-          # LazyVim / tree-sitter build deps.
           gcc
           gnumake
           unzip

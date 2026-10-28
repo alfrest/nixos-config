@@ -11,7 +11,6 @@
   flake.nixosModules.home-zsh =
     { pkgs, lib, ... }:
     {
-      # System half: login shell + /etc/shells registration.
       users.users.alfrest.shell = pkgs.zsh;
       programs.zsh.enable = true;
 
@@ -31,7 +30,6 @@
           ];
         };
 
-        # Non-bundled plugins.
         autosuggestion.enable = true;
         syntaxHighlighting.enable = true;
 

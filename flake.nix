@@ -45,7 +45,6 @@
   outputs =
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } (
-      # Every .nix file under ./modules is itself a flake-parts module.
       inputs.import-tree ./modules
     );
 }
