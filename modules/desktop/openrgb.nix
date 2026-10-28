@@ -6,7 +6,7 @@
     {
       services.hardware.openrgb = {
         enable = true;
-        startupProfile = "blue"; # copy file from ~/.config/OpenRGB/blue.orp to /var/lib/OpenRGB/
+        startupProfile = "default"; # copy file from ~/.config/OpenRGB/default.orp to /var/lib/OpenRGB/
       };
     };
 }
