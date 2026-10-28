@@ -57,6 +57,14 @@ Formatting: `nixfmt`/`alejandra` are not installed, and the stock files are not 
 
 Without `--flake`, `nixos-rebuild` targets `/etc/nixos`, not this repo. `sudo` needs a password here (`sudo -n` fails), so ask the user to run privileged rebuilds.
 
+## Comments
+
+Do not litter the config with comments. The bar is whether the comment helps
+someone (human or AI) who reads the file later with no memory of this change:
+explain intent, non-obvious choices, workarounds, or upstream quirks. Anything
+that just restates the code, narrates the edit, or would be obvious from the
+attribute name does not get written. When in doubt, leave it out.
+
 ## Constraints
 
 - Never change `system.stateVersion` (`"26.05"`), even after upgrades.
