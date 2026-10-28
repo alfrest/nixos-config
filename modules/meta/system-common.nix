@@ -13,6 +13,7 @@
         self.nixosModules.networking
         self.nixosModules.locale
         self.nixosModules.openssh
+        self.nixosModules.tailscale
         self.nixosModules.secrets
         self.nixosModules.packages
         self.nixosModules.state-version
