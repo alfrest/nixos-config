@@ -40,6 +40,9 @@ in
 
       # RTX 3070: NVIDIA driver instead of the VM's virtio-gpu stack.
       self.nixosModules.desktop-nvidia
+
+      # RGB lighting.
+      self.nixosModules.desktop-openrgb
     ];
   };
 }
