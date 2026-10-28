@@ -10,6 +10,7 @@
     {
       imports = [
         self.nixosModules.nix
+        self.nixosModules.nix-ld
         self.nixosModules.networking
         self.nixosModules.locale
         self.nixosModules.openssh
