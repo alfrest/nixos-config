@@ -11,7 +11,7 @@
         [ (modulesPath + "/installer/scan/not-detected.nix")
         ];
 
-      boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" ];
+      boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "uas" "sd_mod" ];
       boot.initrd.kernelModules = [ ];
       boot.kernelModules = [ "kvm-intel" ];
       boot.extraModulePackages = [ ];
@@ -25,6 +25,12 @@
         { device = "/dev/disk/by-uuid/7A40-4CED";
           fsType = "vfat";
           options = [ "fmask=0077" "dmask=0077" ];
+        };
+
+      fileSystems."/mnt/btrfs-pool" =
+        { device = "/dev/disk/by-uuid/5d3c3a5d-4a00-48ab-9530-08bcc1a7bfd7";
+          fsType = "btrfs";
+          options = [ "noatime" "compress=zstd:3" ];
         };
 
       swapDevices = [ ];
