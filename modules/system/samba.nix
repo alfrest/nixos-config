@@ -1,10 +1,3 @@
-# SMB file server for /srv/data (srv only).
-#
-# Samba keeps its own NTLM passdb, separate from the unix password. The
-# sops-managed `smb-pass` feeds `smbpasswd` at service start: it adds `alfrest`
-# to the passdb if missing and (re)sets the password, so rotating the secret in
-# secrets/srv.yaml takes effect on the next rebuild. Root runs smbpasswd, so no
-# old password is needed.
 { config, lib, pkgs, ... }:
 
 {
@@ -33,12 +26,6 @@
             "valid users" = "alfrest";
           };
         };
-      };
-
-      # Discovery for Windows; Linux/macOS clients find the server by hostname.
-      services.samba-wsdd = {
-        enable = true;
-        openFirewall = true;
       };
 
       systemd.services."samba-smbd" = {
