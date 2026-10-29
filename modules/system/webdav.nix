@@ -13,25 +13,24 @@
       networking.firewall.allowedTCPPorts = [ 5001 ];
 
       systemd.services.rclone-webdav = {
-        description = "WebDAV server for /srv/data";
-        after = [ "network.target" "sops-nix.service" "srv-data.mount" ];
+        description = "WebDAV server for /srv/shared";
+        after = [ "network.target" "sops-nix.service" "srv-shared-data.mount" ];
         wantedBy = [ "multi-user.target" ];
-        unitConfig.ConditionPathIsMountPoint = "/srv/data";
+        unitConfig.ConditionPathIsMountPoint = "/srv/shared/data";
         serviceConfig = {
           User = "alfrest";
           Group = "users";
           LoadCredential =
             "webdav-pass:${config.sops.secrets."webdav-pass".path}";
           ExecStart = pkgs.writeShellScript "rclone-webdav" ''
-            exec ${pkgs.rclone}/bin/rclone serve webdav /srv/data \
+            exec ${pkgs.rclone}/bin/rclone serve webdav /srv/shared \
               --config /dev/null \
               --addr :5001 \
               --user alfrest \
               --pass "$(cat "$CREDENTIALS_DIRECTORY/webdav-pass")"
           '';
           NoNewPrivileges = true;
-          ProtectSystem = "strict";
-          ReadWritePaths = "/srv/data";
+          ProtectSystem = "full";
           PrivateTmp = true;
           PrivateDevices = true;
           ProtectHome = true;

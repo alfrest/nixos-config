@@ -19,8 +19,8 @@
             "server min protocol" = "SMB2";
             "server role" = "standalone server";
           };
-          data = {
-            path = "/srv/data";
+          shared = {
+            path = "/srv/shared";
             browseable = "yes";
             "read only" = "no";
             "valid users" = "alfrest";
@@ -29,8 +29,8 @@
       };
 
       systemd.services."samba-smbd" = {
-        after = [ "sops-nix.service" "srv-data.mount" ];
-        unitConfig.ConditionPathIsMountPoint = "/srv/data";
+        after = [ "sops-nix.service" "srv-shared-data.mount" ];
+        unitConfig.ConditionPathIsMountPoint = "/srv/shared/data";
         serviceConfig.LoadCredential =
           "smb-pass:${config.sops.secrets."smb-pass".path}";
         preStart = ''

@@ -35,7 +35,7 @@
 
       # Share mount for @data (top-level pool mount stays above for admin work
       # like snapshots). nofail on both: see srv/default.nix mount guards.
-      fileSystems."/srv/data" =
+      fileSystems."/srv/shared/data" =
         { device = "/dev/disk/by-uuid/5d3c3a5d-4a00-48ab-9530-08bcc1a7bfd7";
           fsType = "btrfs";
           options = [ "subvol=@data" "noatime" "compress=zstd:3" "nofail" ];
