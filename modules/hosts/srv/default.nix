@@ -33,6 +33,7 @@ in
 
       self.nixosModules.srv-hardware
       self.nixosModules.boot
+      self.nixosModules.btrfs-scrub
 
       self.nixosModules.base
       self.nixosModules.immich
