@@ -1,7 +1,10 @@
 # Secrets — sops-nix setup
 
-Status: **scaffolding in place, no secrets yet** (2026-10-27)
-Scope: every host built from this flake (`vm`, later `dsk`, later `srv`)
+Status: **srv added** (2026-10-29): `secrets/srv.yaml` holds `smb-pass` and
+`webdav-pass`, encrypted to srv only.
+Scope: every host built from this flake (`vm`, `dsk`, `srv`)
+Pending: `sops updatekeys secrets/common.yaml` — the shared file is encrypted
+to vm + dsk still; run it on either (srv activation does not need it yet).
 
 The repository is public, so the rule is simple: **ciphertext in git, key material
 on the host, plaintext only at runtime.** Nothing decrypted ever reaches

@@ -22,8 +22,8 @@ keys:
   # dsk — `ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub` on dsk.
   - &dsk age1zx3pmc8xqz9upc067nklfyk8sgsydgng5nky7dy24eepcyyeff7q06eylp
 
-  # srv — TODO: fill in once srv is installed (docs/secrets.md → "Adding srv").
-  # - &srv age1...
+  # srv — `ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub` on srv.
+  - &srv age1qu4ffldtxldegk2m39229k9jz5wfamwzhu0msf37e73xxue4q5jqt9dqvy
 
   # Optional: your own key, so you can edit secrets from a workstation without
   # root on a host. Fill in, uncomment, and add it to the rules you want:
@@ -31,12 +31,14 @@ keys:
   # - &alfrest age1...
 
 creation_rules:
-  # Shared by every host. Add *srv here when it comes online, then run
-  # `sops updatekeys secrets/common.yaml`.
+  # Shared by every host. srv's recipient is listed here but the ciphertext is
+  # not re-wrapped yet: `sops updatekeys secrets/common.yaml` still needs to run
+  # on vm or dsk (docs/secrets.md → "Adding a host", step 3).
   - path_regex: secrets/common\.yaml$
     age:
       - *vm
       - *dsk
+      - *srv
 
   # Machine-only files: exactly one recipient.
   - path_regex: secrets/vm\.yaml$
@@ -47,7 +49,7 @@ creation_rules:
     age:
       - *dsk
 
-  # srv: SMB credentials and other host-only secrets (docs/secrets.md).
-  # - path_regex: secrets/srv\.yaml$
-  #   age:
-  #     - *srv
+  # srv: machine-only secrets (SMB/WebDAV passwords and similar).
+  - path_regex: secrets/srv\.yaml$
+    age:
+      - *srv

@@ -36,6 +36,8 @@ in
 
       self.nixosModules.base
       self.nixosModules.immich
+      self.nixosModules.samba
+      self.nixosModules.webdav
     ];
   };
 }
