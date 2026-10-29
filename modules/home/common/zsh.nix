@@ -54,6 +54,8 @@
             fi
 
             eval "$(zoxide init zsh)"
+
+            bindkey '^Y' autosuggest-accept
           '')
         ];
       };
