@@ -30,7 +30,7 @@
       fileSystems."/mnt/btrfs-pool" =
         { device = "/dev/disk/by-uuid/5d3c3a5d-4a00-48ab-9530-08bcc1a7bfd7";
           fsType = "btrfs";
-          options = [ "noatime" "compress=zstd:3" ];
+          options = [ "noatime" "compress=zstd:3" "nofail" ];
         };
 
       swapDevices = [ ];
