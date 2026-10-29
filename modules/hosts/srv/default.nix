@@ -14,7 +14,16 @@ in
 
     modules = [
       # Headless: `base` only, never the `desktop` meta module.
-      { networking.hostName = "srv"; }
+      {
+        networking.hostName = "srv";
+
+        # Laptop used as a server: closing the lid must not suspend it.
+        services.logind.settings.Login = {
+          HandleLidSwitch = "ignore";
+          HandleLidSwitchExternalPower = "ignore";
+          HandleLidSwitchDocked = "ignore";
+        };
+      }
 
       self.nixosModules.srv-hardware
       self.nixosModules.boot
