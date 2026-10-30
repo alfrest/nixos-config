@@ -37,6 +37,7 @@ in
 
       self.nixosModules.base
       self.nixosModules.immich
+      self.nixosModules.open-webui
       self.nixosModules.samba
       self.nixosModules.webdav
     ];
