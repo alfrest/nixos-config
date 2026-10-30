@@ -33,8 +33,8 @@
           # OpenCode's gateway exposes an OpenAI-compatible API; the plural
           # variant is the one current releases read, the singular is kept for
           # older code paths.
-          OPENAI_API_BASE_URL = "https://opencode.ai/zen/v1";
-          OPENAI_API_BASE_URLS = "https://opencode.ai/zen/v1";
+          OPENAI_API_BASE_URL = "https://opencode.ai/zen/go/v1";
+          OPENAI_API_BASE_URLS = "https://opencode.ai/zen/go/v1";
           ENABLE_OLLAMA_API = "False";
         };
       };
