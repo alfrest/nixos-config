@@ -34,6 +34,7 @@ in
       self.nixosModules.srv-hardware
       self.nixosModules.boot
       self.nixosModules.btrfs-scrub
+      self.nixosModules.zram-swap
 
       self.nixosModules.base
       self.nixosModules.immich
