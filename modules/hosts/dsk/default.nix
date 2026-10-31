@@ -40,8 +40,6 @@ in
       self.nixosModules.desktop-nvidia
 
       self.nixosModules.desktop-openrgb
-
-      self.nixosModules.audio
     ];
   };
 }

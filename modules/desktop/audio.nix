@@ -4,7 +4,7 @@
 { ... }:
 
 {
-  flake.nixosModules.audio = {
+  flake.nixosModules.desktop-audio = {
     services.pipewire = {
       enable = true;
       audio.enable = true;
