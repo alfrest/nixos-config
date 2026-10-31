@@ -30,6 +30,7 @@ in
       self.nixosModules.boot
 
       self.nixosModules.base
+      self.nixosModules.keyd
 
       self.nixosModules.desktop
     ];
