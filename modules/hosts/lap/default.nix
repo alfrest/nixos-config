@@ -16,8 +16,14 @@ in
     specialArgs = { inherit pkgs-unstable zen-browser; };
 
     modules = [
+      # Physical display (`niri msg outputs` on the laptop).
       {
         networking.hostName = "lap";
+        desktop.niri.output = {
+          name = "eDP-1";
+          mode = "2560x1600@120.000";
+          scale = "1.5";
+        };
       }
 
       self.nixosModules.lap-hardware
