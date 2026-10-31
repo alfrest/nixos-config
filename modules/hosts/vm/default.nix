@@ -32,6 +32,8 @@ in
       self.nixosModules.base
 
       self.nixosModules.desktop
+
+      self.nixosModules.audio
     ];
   };
 }

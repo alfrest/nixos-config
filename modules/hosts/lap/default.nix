@@ -33,6 +33,9 @@ in
       self.nixosModules.keyd
 
       self.nixosModules.desktop
+
+      self.nixosModules.audio
+      self.nixosModules.bluetooth
     ];
   };
 }
