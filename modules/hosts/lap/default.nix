@@ -1,4 +1,4 @@
-{ self, inputs, lib, ... }:
+{ self, inputs, ... }:
 
 let
   system = "x86_64-linux";
@@ -18,10 +18,6 @@ in
     modules = [
       {
         networking.hostName = "lap";
-
-        # Keeps evaluation passing until lap-hardware declares the real root.
-        fileSystems."/".fsType = lib.mkDefault "ext4";
-        fileSystems."/".device = lib.mkDefault "/dev/disk/by-label/TODO";
       }
 
       self.nixosModules.lap-hardware
