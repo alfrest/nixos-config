@@ -1,5 +1,5 @@
 {
-  description = "NixOS VM configuration using the dendritic pattern with flake-parts";
+  description = "NixOS configurations for multiple hosts (srv, vm, dsk) using the dendritic pattern with flake-parts";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
