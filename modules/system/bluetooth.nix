@@ -4,10 +4,12 @@
 { ... }:
 
 {
-  flake.nixosModules.bluetooth = {
+  flake.nixosModules.bluetooth = { pkgs-unstable, ... }: {
     hardware.bluetooth = {
       enable = true;
       powerOnBoot = true;
+      # BlueZ 5.86 drops A2DP for devices advertising both audio roles.
+      package = pkgs-unstable.bluez;
     };
   };
 }
