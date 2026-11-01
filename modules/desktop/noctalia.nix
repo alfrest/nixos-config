@@ -20,6 +20,10 @@
         (builtins.readFile ./files/noctalia/config.toml);
     in
     {
+      # Noctalia's Control Center hides its power-profile controls unless
+      # power-profiles-daemon is on the bus.
+      services.power-profiles-daemon.enable = true;
+
       environment.systemPackages = [ pkgs.noctalia ];
 
       home-manager.users.alfrest.xdg.configFile."noctalia/config.toml".text = config;
