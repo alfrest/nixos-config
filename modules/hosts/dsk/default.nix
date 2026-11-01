@@ -34,6 +34,7 @@ in
       self.nixosModules.boot
 
       self.nixosModules.base
+      self.nixosModules.webdav-mount
 
       self.nixosModules.desktop
 

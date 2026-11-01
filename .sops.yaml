@@ -25,20 +25,22 @@ keys:
   # srv — `ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub` on srv.
   - &srv age1qu4ffldtxldegk2m39229k9jz5wfamwzhu0msf37e73xxue4q5jqt9dqvy
 
+  # lap — `ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub` on lap.
+  - &lap age1vcgktukpjgpay5qws92vsxy6wqxstaq4qwgnshhmhmfmukyucv5snf28ne
+
   # Optional: your own key, so you can edit secrets from a workstation without
   # root on a host. Fill in, uncomment, and add it to the rules you want:
   #   ssh-to-age < ~/.ssh/id_ed25519.pub
   # - &alfrest age1...
 
 creation_rules:
-  # Shared by every host. srv's recipient is listed here but the ciphertext is
-  # not re-wrapped yet: `sops updatekeys secrets/common.yaml` still needs to run
-  # on vm or dsk (docs/secrets.md → "Adding a host", step 3).
+  # Shared by every host.
   - path_regex: secrets/common\.yaml$
     age:
       - *vm
       - *dsk
       - *srv
+      - *lap
 
   # Machine-only files: exactly one recipient.
   - path_regex: secrets/vm\.yaml$

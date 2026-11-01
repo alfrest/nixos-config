@@ -3,9 +3,9 @@
 Status: **srv added** (2026-10-29): `secrets/srv.yaml` holds `smb-pass` and
 `webdav-pass`, encrypted to srv only; `opencode-api-key` (Open WebUI) still has
 to be added there on srv, see `modules/system/open-webui.nix`.
-Scope: every host built from this flake (`vm`, `dsk`, `srv`)
-Pending: `sops updatekeys secrets/common.yaml` — the shared file is encrypted
-to vm + dsk still; run it on either (srv activation does not need it yet).
+`secrets/common.yaml` holds `webdav-pass` for the client hosts (`vm`, `dsk`,
+`lap`), which mount srv's WebDAV share.
+Scope: every host built from this flake (`vm`, `dsk`, `srv`, `lap`)
 
 The repository is public, so the rule is simple: **ciphertext in git, key material
 on the host, plaintext only at runtime.** Nothing decrypted ever reaches
