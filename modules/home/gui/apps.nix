@@ -23,6 +23,7 @@
         brave
         papers
         loupe
+        qbittorrent
       ];
     };
 }
