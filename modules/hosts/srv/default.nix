@@ -38,6 +38,7 @@ in
       self.nixosModules.zram-swap
 
       self.nixosModules.base
+      self.nixosModules.borgbackup
       self.nixosModules.immich
       self.nixosModules.open-webui
       self.nixosModules.samba
