@@ -7,7 +7,7 @@
     {
       imports = [
         self.nixosModules.home-alacritty
-        self.nixosModules.home-media
+        self.nixosModules.home-apps
         self.nixosModules.home-clipboard
       ];
     };
