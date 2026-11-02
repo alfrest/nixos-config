@@ -55,3 +55,8 @@ creation_rules:
   - path_regex: secrets/srv\.yaml$
     age:
       - *srv
+
+  # lap: machine-only secrets (eduroam credentials).
+  - path_regex: secrets/lap\.yaml$
+    age:
+      - *lap

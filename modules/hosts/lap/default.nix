@@ -36,6 +36,7 @@ in
       self.nixosModules.desktop
 
       self.nixosModules.bluetooth
+      self.nixosModules.eduroam
     ];
   };
 }
