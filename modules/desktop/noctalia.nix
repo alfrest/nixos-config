@@ -21,8 +21,10 @@
     in
     {
       # Noctalia's Control Center hides its power-profile controls unless
-      # power-profiles-daemon is on the bus.
+      # power-profiles-daemon is on the bus. The battery widget reads
+      # UPower over D-Bus; without it nothing shows in the bar.
       services.power-profiles-daemon.enable = true;
+      services.upower.enable = true;
 
       environment.systemPackages = [ pkgs.noctalia ];
 
