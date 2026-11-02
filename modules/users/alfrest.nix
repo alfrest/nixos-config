@@ -6,7 +6,7 @@
     {
       users.users.alfrest = {
         isNormalUser = true;
-        extraGroups = [ "wheel" ];
+        extraGroups = [ "wheel" "networkmanager" ];
         packages = with pkgs; [ ];
       };
 
