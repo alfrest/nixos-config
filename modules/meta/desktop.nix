@@ -13,6 +13,7 @@
         self.nixosModules.desktop-noctalia
         self.nixosModules.desktop-greetd
         self.nixosModules.desktop-audio
+        self.nixosModules.desktop-nix-ld-gui
         self.nixosModules.home-gui
       ];
     };
