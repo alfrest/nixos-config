@@ -10,14 +10,19 @@
   flake.nixosModules.home-apps =
     { pkgs, zen-browser, ... }:
     {
-      # Spotify is unfree. Named allow-list rather than a predicate so it
-      # merges with the predicate other modules (e.g. `desktop-nvidia`) set.
-      nixpkgs.config.allowUnfreePackages = [ "spotify" ];
+      # Spotify and Discord are unfree. Named allow-list rather than a
+      # predicate so it merges with the predicate other modules (e.g.
+      # `desktop-nvidia`) set.
+      nixpkgs.config.allowUnfreePackages = [
+        "spotify"
+        "discord"
+      ];
 
       home-manager.users.alfrest.home.packages = with pkgs; [
         zen-browser
         playerctl
         spotify
+        discord
         nautilus
         mpv
         brave
