@@ -33,6 +33,9 @@ in
       self.nixosModules.webdav-mount
       self.nixosModules.keyd
 
+      self.nixosModules.lang-java
+      self.nixosModules.lang-scala
+
       self.nixosModules.desktop
 
       self.nixosModules.bluetooth
