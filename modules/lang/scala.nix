@@ -7,6 +7,7 @@
       environment.systemPackages = [
         pkgs-unstable.scala
         pkgs-unstable.metals
+        pkgs-unstable.coursier
       ];
     };
 }
