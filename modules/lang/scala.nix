@@ -2,10 +2,10 @@
 
 {
   flake.nixosModules.lang-scala =
-    { pkgs, ... }:
+    { pkgs-unstable, ... }:
     {
-      environment.systemPackages = with pkgs; [
-        scala
+      environment.systemPackages = [
+        pkgs-unstable.scala
       ];
     };
 }
