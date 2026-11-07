@@ -51,6 +51,10 @@
           "webdav.${domain}".extraConfig = ''
             reverse_proxy 127.0.0.1:5001
           '';
+
+          "torrent.${domain}".extraConfig = ''
+            reverse_proxy 127.0.0.1:8080
+          '';
         };
       };
 
