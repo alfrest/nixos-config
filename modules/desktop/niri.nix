@@ -52,7 +52,7 @@
           outputBlock
           "accel-speed ${accelSpeedStr}"
         ]
-        (builtins.readFile ./files/niri/config.kdl);
+        (builtins.readFile ../files/niri/config.kdl);
     in
     {
       options.desktop.niri.output = lib.mkOption {

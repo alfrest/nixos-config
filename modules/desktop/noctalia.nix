@@ -17,7 +17,7 @@
       config = builtins.replaceStrings
         [ "@WALLPAPER_DIR@" "@WALLPAPER@" ]
         [ (builtins.dirOf wallpaper) wallpaper ]
-        (builtins.readFile ./files/noctalia/config.toml);
+        (builtins.readFile ../files/noctalia/config.toml);
     in
     {
       # Noctalia's Control Center hides its power-profile controls unless

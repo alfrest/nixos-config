@@ -4,7 +4,11 @@
 # User-specific settings belong under `home-manager.users.<name>`;
 # `environment.systemPackages` is for things that must exist system-wide
 # (services, sudo, recovery shells).
-{ inputs, ... }:
+#
+# `pkgs-unstable` is forwarded explicitly because NixOS `specialArgs` do not
+# reach `home-manager.users.*` submodules; user modules take it as an arg to
+# declare unstable packages.
+{ inputs, pkgs-unstable, ... }:
 
 {
   flake.nixosModules.home-manager =
@@ -18,6 +22,8 @@
       # Install packages through the system generation so they roll back with
       # `nixos-rebuild` instead of a separate per-user profile.
       home-manager.useUserPackages = true;
+
+      home-manager.extraSpecialArgs.pkgs-unstable = pkgs-unstable;
 
       # Move conflicting files aside instead of aborting activation.
       home-manager.backupFileExtension = "hm-backup";

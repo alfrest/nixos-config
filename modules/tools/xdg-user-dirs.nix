@@ -4,7 +4,7 @@
 { ... }:
 
 {
-  flake.nixosModules.home-xdg-user-dirs =
+  flake.nixosModules.xdg-user-dirs =
     { ... }:
     {
       home-manager.users.alfrest = {

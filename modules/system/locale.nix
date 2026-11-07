@@ -6,7 +6,7 @@
 #
 # `console.keyMap` is the TTY/console layout — it applies to the login prompt,
 # the recovery shell and anything before greetd starts. It does **not** affect
-# niri, which sets its own `xkb { layout "se" }` in `files/niri/config.kdl`.
+# niri, which sets its own `xkb { layout "se" }` in `modules/files/niri/config.kdl`.
 # `services.xserver.xkb.layout` is not needed here: there is no X server, and
 # XWayland inherits the layout from niri.
 { ... }:

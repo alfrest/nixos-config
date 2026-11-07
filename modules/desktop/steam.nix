@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  flake.nixosModules.desktop-steam =
+  flake.nixosModules.steam =
     { ... }:
     {
       nixpkgs.config.allowUnfreePackages = [

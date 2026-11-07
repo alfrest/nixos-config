@@ -2,12 +2,12 @@
 # Zen comes from the flake input; its binary is `zen-beta` (the `default`
 # package is the beta variant, and there is no `zen`).
 #
-# `playerctl` is here rather than in home-common/cli-tools because its only
-# consumer is the niri media-key bindings, which need a running session.
+# `playerctl` is here rather than in `modules/tools/cli-tools.nix` because its
+# only consumer is the niri media-key bindings, which need a running session.
 { ... }:
 
 {
-  flake.nixosModules.home-apps =
+  flake.nixosModules.apps =
     { pkgs, zen-browser, ... }:
     {
       # Spotify and Discord are unfree. Named allow-list rather than a

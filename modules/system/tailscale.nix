@@ -1,4 +1,5 @@
-# Tailscale (WireGuard mesh VPN). Shared by every host via `system-common`.
+# Tailscale (WireGuard mesh VPN). Shared by every host via the `base` meta
+# module.
 #
 # Enabling the service only brings up the daemon; the node still has to join the
 # tailnet once with `sudo tailscale up`. Login state persists in

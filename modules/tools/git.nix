@@ -3,7 +3,7 @@
 { ... }:
 
 {
-  flake.nixosModules.home-git =
+  flake.nixosModules.git =
     { ... }:
     {
       home-manager.users.alfrest.programs.git = {

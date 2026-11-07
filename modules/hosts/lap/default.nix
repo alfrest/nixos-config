@@ -40,8 +40,8 @@ in
 
       self.nixosModules.bluetooth
       self.nixosModules.eduroam
-      self.nixosModules.home-games
-      self.nixosModules.desktop-steam
+      self.nixosModules.games
+      self.nixosModules.steam
     ];
   };
 }

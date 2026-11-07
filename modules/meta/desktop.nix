@@ -14,7 +14,10 @@
         self.nixosModules.desktop-greetd
         self.nixosModules.desktop-audio
         self.nixosModules.desktop-nix-ld-gui
-        self.nixosModules.home-gui
+
+        self.nixosModules.alacritty
+        self.nixosModules.apps
+        self.nixosModules.clipboard
       ];
     };
 }

@@ -8,7 +8,7 @@
 { ... }:
 
 {
-  flake.nixosModules.home-zsh =
+  flake.nixosModules.zsh =
     { pkgs, lib, ... }:
     {
       users.users.alfrest.shell = pkgs.zsh;

@@ -10,7 +10,7 @@
 { ... }:
 
 {
-  flake.nixosModules.home-alacritty =
+  flake.nixosModules.alacritty =
     { ... }:
     {
       home-manager.users.alfrest.programs.alacritty = {
