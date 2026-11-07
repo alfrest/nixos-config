@@ -19,11 +19,11 @@
         # libfontmanager and AWT link the ALSA, freetype and X11 stack here.
         alsa-lib
         freetype
-        xorg.libX11
-        xorg.libXext
-        xorg.libXi
-        xorg.libXrender
-        xorg.libXtst
+        libX11
+        libXext
+        libXi
+        libXrender
+        libXtst
       ];
     };
 }
