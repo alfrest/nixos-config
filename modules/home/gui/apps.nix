@@ -25,7 +25,6 @@
         discord
         nautilus
         mpv
-        brave
         papers
         loupe
         qbittorrent
