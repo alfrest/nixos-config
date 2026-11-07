@@ -9,7 +9,7 @@
       services.immich = {
         enable = true;
         package = pkgs-unstable.immich;
-        host = "0.0.0.0";
+        host = "127.0.0.1";
       };
 
       systemd.services.immich-server.unitConfig.RequiresMountsFor = [

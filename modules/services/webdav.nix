@@ -10,8 +10,6 @@
         mode = "0400";
       };
 
-      networking.firewall.allowedTCPPorts = [ 5001 ];
-
       systemd.services.rclone-webdav = {
         description = "WebDAV server for /srv/shared";
         after = [ "network.target" "sops-nix.service" "srv-shared-data.mount" ];
@@ -25,7 +23,7 @@
           ExecStart = pkgs.writeShellScript "rclone-webdav" ''
             exec ${pkgs.rclone}/bin/rclone serve webdav /srv/shared \
               --config /dev/null \
-              --addr :5001 \
+              --addr 127.0.0.1:5001 \
               --user alfrest \
               --pass "$(cat "$CREDENTIALS_DIRECTORY/webdav-pass")"
           '';

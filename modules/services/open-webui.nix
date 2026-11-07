@@ -25,9 +25,8 @@
       # in `stateDir`; these values only seed a fresh database.
       services.open-webui = {
         enable = true;
-        host = "0.0.0.0";
+        host = "127.0.0.1";
         port = 8787;
-        openFirewall = true;
         environmentFile = config.sops.templates."open-webui-env".path;
         environment = {
           # OpenCode's gateway exposes an OpenAI-compatible API; the plural

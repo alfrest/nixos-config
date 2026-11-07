@@ -43,6 +43,7 @@ in
       self.nixosModules.open-webui
       self.nixosModules.samba
       self.nixosModules.webdav
+      self.nixosModules.caddy
     ];
   };
 }
