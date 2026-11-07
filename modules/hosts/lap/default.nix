@@ -33,8 +33,8 @@ in
       self.nixosModules.webdav-mount
       self.nixosModules.keyd
 
-      self.nixosModules.lang-java
-      self.nixosModules.lang-scala
+      self.nixosModules.java
+      self.nixosModules.scala
 
       self.nixosModules.desktop
 

@@ -9,7 +9,7 @@
 { ... }:
 
 {
-  flake.nixosModules.desktop-noctalia =
+  flake.nixosModules.noctalia =
     { pkgs, ... }:
     let
       wallpaper = pkgs.nixos-artwork.wallpapers.binary-black.gnomeFilePath;

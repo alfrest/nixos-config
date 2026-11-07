@@ -6,7 +6,7 @@
 { ... }:
 
 {
-  flake.nixosModules.desktop-greetd =
+  flake.nixosModules.greetd =
     { pkgs, ... }:
     {
       services.greetd = {

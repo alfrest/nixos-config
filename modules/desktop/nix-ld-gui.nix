@@ -5,7 +5,7 @@
 { ... }:
 
 {
-  flake.nixosModules.desktop-nix-ld-gui =
+  flake.nixosModules.nix-ld-gui =
     { pkgs, ... }:
     {
       programs.nix-ld.libraries = with pkgs; [

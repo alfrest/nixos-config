@@ -11,7 +11,7 @@
 { ... }:
 
 {
-  flake.nixosModules.desktop-niri =
+  flake.nixosModules.niri =
     { pkgs, zen-browser, config, lib, ... }:
     let
       cfg = config.desktop.niri;

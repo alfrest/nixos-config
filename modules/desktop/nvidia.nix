@@ -1,5 +1,5 @@
 # NVIDIA driver for a host with a dedicated GeForce card. Opt in per host; the
-# VM keeps the virtio-gpu stack from `desktop-graphics`.
+# VM keeps the virtio-gpu stack from `graphics`.
 #
 # Wayland-only: `services.xserver.videoDrivers` is just the selector the NVIDIA
 # module keys off, it does not enable X11 (which would compete with niri for
@@ -9,7 +9,7 @@
 { ... }:
 
 {
-  flake.nixosModules.desktop-nvidia =
+  flake.nixosModules.nvidia =
     { config, lib, ... }:
     {
       # The driver is unfree; whitelist only its packages rather than turning

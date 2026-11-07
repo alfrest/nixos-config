@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  flake.nixosModules.user-alfrest =
+  flake.nixosModules.alfrest =
     { ... }:
     {
       users.users.alfrest = {

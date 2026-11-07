@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  flake.nixosModules.desktop-openrgb =
+  flake.nixosModules.openrgb =
     { pkgs, ... }:
     {
       services.hardware.openrgb = {

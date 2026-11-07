@@ -7,13 +7,13 @@
     { ... }:
     {
       imports = [
-        self.nixosModules.desktop-graphics
-        self.nixosModules.desktop-stylix
-        self.nixosModules.desktop-niri
-        self.nixosModules.desktop-noctalia
-        self.nixosModules.desktop-greetd
-        self.nixosModules.desktop-audio
-        self.nixosModules.desktop-nix-ld-gui
+        self.nixosModules.graphics
+        self.nixosModules.stylix
+        self.nixosModules.niri
+        self.nixosModules.noctalia
+        self.nixosModules.greetd
+        self.nixosModules.audio
+        self.nixosModules.nix-ld-gui
 
         self.nixosModules.alacritty
         self.nixosModules.apps

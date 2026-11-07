@@ -3,7 +3,7 @@
 { ... }:
 
 {
-  flake.nixosModules.lang-scala =
+  flake.nixosModules.scala =
     { pkgs-unstable, ... }:
     {
       home-manager.users.alfrest.home.packages = with pkgs-unstable; [

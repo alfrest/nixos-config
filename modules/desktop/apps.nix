@@ -12,7 +12,7 @@
     {
       # Spotify and Discord are unfree. Named allow-list rather than a
       # predicate so it merges with the predicate other modules (e.g.
-      # `desktop-nvidia`) set.
+      # `nvidia`) set.
       nixpkgs.config.allowUnfreePackages = [
         "spotify"
         "discord"

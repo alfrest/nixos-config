@@ -7,7 +7,7 @@
 { ... }:
 
 {
-  flake.nixosModules.desktop-graphics =
+  flake.nixosModules.graphics =
     { pkgs, ... }:
     {
       hardware.graphics.enable = true;

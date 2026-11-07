@@ -10,7 +10,7 @@
 { inputs, ... }:
 
 {
-  flake.nixosModules.desktop-stylix =
+  flake.nixosModules.stylix =
     { pkgs, ... }:
     {
       imports = [ inputs.stylix.nixosModules.stylix ];

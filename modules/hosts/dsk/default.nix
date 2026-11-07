@@ -38,9 +38,9 @@ in
 
       self.nixosModules.desktop
 
-      self.nixosModules.desktop-nvidia
+      self.nixosModules.nvidia
 
-      self.nixosModules.desktop-openrgb
+      self.nixosModules.openrgb
       self.nixosModules.steam
     ];
   };

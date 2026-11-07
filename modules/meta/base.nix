@@ -18,7 +18,7 @@
         self.nixosModules.packages
         self.nixosModules.state-version
         self.nixosModules.home-manager
-        self.nixosModules.user-alfrest
+        self.nixosModules.alfrest
 
         # Per-user defaults that work without a graphical session.
         self.nixosModules.xdg-user-dirs
