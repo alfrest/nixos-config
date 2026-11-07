@@ -1,6 +1,7 @@
 # Client side of the WebDAV share served by srv: an rclone FUSE mount at
-# `~/Shared` with the full VFS cache. Opt-in (never on srv itself, which is the
-# server); imported by the hosts that need it.
+# `~/Shared` with the full VFS cache. Connects through srv's Caddy
+# (`webdav.alfrest.net`, TLS there) rather than the raw rclone port. Opt-in
+# (never on srv itself, which is the server); imported by the hosts that need it.
 { ... }:
 
 {
@@ -42,7 +43,7 @@
             unset pass
 
             export RCLONE_CONFIG_SRVWEBDAV_TYPE=webdav
-            export RCLONE_CONFIG_SRVWEBDAV_URL=http://srv:5001
+            export RCLONE_CONFIG_SRVWEBDAV_URL=https://webdav.alfrest.net
             export RCLONE_CONFIG_SRVWEBDAV_VENDOR=rclone
             export RCLONE_CONFIG_SRVWEBDAV_USER=alfrest
             export RCLONE_CONFIG_SRVWEBDAV_PASS="$obscured"
