@@ -8,7 +8,7 @@
 
 {
   flake.nixosModules.apps =
-    { pkgs, zen-browser, ... }:
+    { pkgs, pkgs-unstable, zen-browser, ... }:
     {
       # Spotify and Discord are unfree. Named allow-list rather than a
       # predicate so it merges with the predicate other modules (e.g.
@@ -19,6 +19,7 @@
       ];
 
       home-manager.users.alfrest.home.packages = with pkgs; [
+        pkgs-unstable.brave
         zen-browser
         playerctl
         spotify
