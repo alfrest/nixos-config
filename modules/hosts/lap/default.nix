@@ -42,6 +42,7 @@ in
       self.nixosModules.eduroam
       self.nixosModules.games
       self.nixosModules.steam
+      self.nixosModules.ulx3s
     ];
   };
 }
