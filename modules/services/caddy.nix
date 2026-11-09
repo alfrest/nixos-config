@@ -55,6 +55,10 @@
           "torrent.${domain}".extraConfig = ''
             reverse_proxy 127.0.0.1:8080
           '';
+
+          "cloud.${domain}".extraConfig = ''
+            reverse_proxy 127.0.0.1:8081
+          '';
         };
       };
 
