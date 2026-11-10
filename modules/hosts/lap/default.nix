@@ -43,6 +43,7 @@ in
       self.nixosModules.games
       self.nixosModules.steam
       self.nixosModules.ulx3s
+      self.nixosModules.wireshark
     ];
   };
 }
