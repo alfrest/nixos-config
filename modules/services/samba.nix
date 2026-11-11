@@ -29,8 +29,7 @@
       };
 
       systemd.services."samba-smbd" = {
-        after = [ "sops-nix.service" "srv-shared-data.mount" ];
-        unitConfig.ConditionPathIsMountPoint = "/srv/shared/data";
+        after = [ "sops-nix.service" ];
         serviceConfig.LoadCredential =
           "smb-pass:${config.sops.secrets."smb-pass".path}";
         preStart = ''

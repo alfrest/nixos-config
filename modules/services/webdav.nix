@@ -12,9 +12,8 @@
 
       systemd.services.rclone-webdav = {
         description = "WebDAV server for /srv/shared";
-        after = [ "network.target" "sops-nix.service" "srv-shared-data.mount" ];
+        after = [ "network.target" "sops-nix.service" ];
         wantedBy = [ "multi-user.target" ];
-        unitConfig.ConditionPathIsMountPoint = "/srv/shared/data";
         serviceConfig = {
           User = "alfrest";
           Group = "users";

@@ -25,10 +25,6 @@ in
         };
 
         services.immich.mediaLocation = "/mnt/btrfs-pool/@appdata/immich/library";
-
-        # The pool is mounted with `nofail`; do not start against the root
-        # filesystem if it failed to mount.
-        systemd.services.immich-server.unitConfig.ConditionPathIsMountPoint = "/mnt/btrfs-pool";
       }
 
       self.nixosModules.srv-hardware

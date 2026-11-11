@@ -13,12 +13,6 @@
     {
       systemd.services.state-backup = {
         description = "Mirror open-webui state to the btrfs pool";
-        unitConfig = {
-          RequiresMountsFor = "/mnt/btrfs-pool";
-          # The pool is nofail-mounted; never write into the root fs shadowed
-          # by the mount when the mount failed.
-          ConditionPathIsMountPoint = "/mnt/btrfs-pool";
-        };
         path = [ pkgs.rsync pkgs.sqlite ];
 
         serviceConfig.Type = "oneshot";

@@ -30,21 +30,21 @@
       fileSystems."/mnt/btrfs-pool" =
         { device = "/dev/disk/by-uuid/5d3c3a5d-4a00-48ab-9530-08bcc1a7bfd7";
           fsType = "btrfs";
-          options = [ "noatime" "compress=zstd:3" "nofail" ];
+          options = [ "noatime" "compress=zstd:3" ];
         };
 
       # Share mounts (top-level pool mount stays above for admin work like
-      # snapshots). nofail on both: see srv/default.nix mount guards.
+      # snapshots).
       fileSystems."/srv/shared/data" =
         { device = "/dev/disk/by-uuid/5d3c3a5d-4a00-48ab-9530-08bcc1a7bfd7";
           fsType = "btrfs";
-          options = [ "subvol=@data" "noatime" "compress=zstd:3" "nofail" ];
+          options = [ "subvol=@data" "noatime" "compress=zstd:3" ];
         };
 
       fileSystems."/srv/shared/servarr" =
         { device = "/dev/disk/by-uuid/5d3c3a5d-4a00-48ab-9530-08bcc1a7bfd7";
           fsType = "btrfs";
-          options = [ "subvol=@servarr" "noatime" "compress=zstd:3" "nofail" ];
+          options = [ "subvol=@servarr" "noatime" "compress=zstd:3" ];
         };
 
       swapDevices = [ ];

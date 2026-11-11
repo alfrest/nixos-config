@@ -24,11 +24,6 @@
       };
 
       systemd.services.qbittorrent = {
-        # nofail mounts; never start against the root filesystem.
-        after = [ "srv-shared-servarr.mount" ];
-        # The @servarr subvolume is only mounted at /srv/shared/servarr,
-        # not visible as a mount point under the pool top level.
-        unitConfig.ConditionPathIsMountPoint = "/srv/shared/servarr";
         serviceConfig.ExecStartPre = pkgs.writeShellScript "qbittorrent-downloads-dir" ''
           ${pkgs.coreutils}/bin/mkdir -p /mnt/btrfs-pool/@servarr/qbittorrent
         '';

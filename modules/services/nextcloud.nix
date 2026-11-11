@@ -40,14 +40,5 @@
           port = 8081;
         }
       ];
-
-      # The pool is mounted with `nofail`; do not start against the root
-      # filesystem if it failed to mount (same guard as immich).
-      systemd.services.nextcloud-setup.unitConfig = {
-        RequiresMountsFor = [ "/mnt/btrfs-pool/@appdata/nextcloud" ];
-        ConditionPathIsMountPoint = "/mnt/btrfs-pool";
-      };
-      systemd.services.phpfpm-nextcloud.unitConfig.ConditionPathIsMountPoint = "/mnt/btrfs-pool";
-      systemd.services.nextcloud-cron.unitConfig.ConditionPathIsMountPoint = "/mnt/btrfs-pool";
     };
 }
