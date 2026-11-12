@@ -40,7 +40,6 @@ in
       self.nixosModules.samba
       self.nixosModules.webdav
       self.nixosModules.qbittorrent
-      self.nixosModules.nextcloud
       self.nixosModules.caddy
     ];
   };
