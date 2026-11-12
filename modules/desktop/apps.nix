@@ -20,6 +20,7 @@
 
       home-manager.users.alfrest.home.packages = with pkgs; [
         pkgs-unstable.brave
+        chromium
         zen-browser
         playerctl
         spotify
