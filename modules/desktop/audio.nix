@@ -5,6 +5,10 @@
 
 {
   flake.nixosModules.audio = {
+    # Gives PipeWire/WirePlumber realtime scheduling; without rtkit they log
+    # RTKit errors and audio threads run at normal priority.
+    security.rtkit.enable = true;
+
     services.pipewire = {
       enable = true;
       audio.enable = true;
