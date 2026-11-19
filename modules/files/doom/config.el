@@ -47,6 +47,10 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 
+;; Doom's java module only attaches `lsp!' when lsp-mode is in use; under
+;; (lsp +eglot) it never starts a server, so hook Eglot up for Java ourselves.
+(add-hook 'java-mode-local-vars-hook #'eglot-ensure)
+
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `with-eval-after-load' block, otherwise Doom's defaults may override your

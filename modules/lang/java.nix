@@ -1,4 +1,5 @@
-# Java toolchain for the alfrest user.
+# Java toolchain for the alfrest user. `jdt-language-server` is the `jdtls`
+# command Eglot runs for Doom's (java +lsp).
 { ... }:
 
 {
@@ -7,6 +8,7 @@
     {
       home-manager.users.alfrest.home.packages = with pkgs; [
         openjdk25
+        jdt-language-server
       ];
     };
 }

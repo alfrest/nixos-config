@@ -1,5 +1,5 @@
-# Per-user CLI tools. Attribute gotchas: there is no `rust` (use `rustc` +
-# `cargo`) and no `npm` (use `nodejs`).
+# Per-user CLI tools. `nixd` backs the Nix LSP in Doom/Nvim. Attribute gotchas:
+# there is no `rust` (use `rustc` + `cargo`) and no `npm` (use `nodejs`).
 { ... }:
 
 {
@@ -11,6 +11,7 @@
         fd
         fzf
         nodejs
+        nixd
         ripgrep
         rustc
         cargo
