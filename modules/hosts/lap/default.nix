@@ -38,6 +38,7 @@ in
 
       self.nixosModules.desktop
 
+      self.nixosModules.avahi
       self.nixosModules.bluetooth
       self.nixosModules.eduroam
       self.nixosModules.games
