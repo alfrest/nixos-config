@@ -27,6 +27,7 @@
         self.nixosModules.zsh
         self.nixosModules.herdr
         self.nixosModules.nvim
+        self.nixosModules.emacs
       ];
     };
 }

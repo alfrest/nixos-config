@@ -1,2 +1,6 @@
 /result
 /result-*
+
+# Doom writes back into the linked config dir (`modules/files/doom`).
+*.elc
+modules/files/doom/custom.el
