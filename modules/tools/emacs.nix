@@ -15,7 +15,7 @@
     {
       home-manager.users.alfrest = {
         home.packages = with pkgs; [
-          emacs30-gtk3
+          emacs
           findutils
           aspell
           aspellDicts.en
@@ -29,7 +29,7 @@
 
         services.emacs = {
           enable = true;
-          package = pkgs.emacs30-gtk3;
+          package = pkgs.emacs;
           startWithUserSession = true;
         };
 
