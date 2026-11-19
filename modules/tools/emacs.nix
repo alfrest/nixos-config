@@ -13,9 +13,6 @@
       home = config.home-manager.users.alfrest.home.homeDirectory;
     in
     {
-      # Symbola's licence is unfree; allow just this one package.
-      nixpkgs.config.allowUnfreePackages = [ "symbola" ];
-
       home-manager.users.alfrest = {
         home.packages = with pkgs; [
           emacs30-gtk3
@@ -25,9 +22,6 @@
           libtool
           pkg-config
           nerd-fonts.symbols-only
-          # Emacs 30's `face-font-family-alternatives` falls back to Symbola;
-          # without it, unrenderable glyphs can stall redisplay (`doom doctor`).
-          symbola
         ];
 
         # `doom` lives in the Doom checkout, which nix does not install.

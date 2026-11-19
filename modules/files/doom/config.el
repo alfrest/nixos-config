@@ -29,6 +29,11 @@
 ;; refresh your font settings. If Emacs still can't find your font, it likely
 ;; wasn't installed correctly. Font issues are rarely Doom issues!
 
+;; Stylix installs the patched JetBrains Mono; using it for symbols too keeps
+;; Emacs on a font that is actually present (its default is Symbola).
+(setq doom-font (font-spec :family "JetBrainsMono Nerd Font Mono" :size 13)
+      doom-symbol-font (font-spec :family "JetBrainsMono Nerd Font Mono"))
+
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
