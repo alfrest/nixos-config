@@ -14,13 +14,22 @@ NixOS flake managing several machines from one tree — currently four hosts: `s
   - `modules/system/` — core OS/wiring `system`-level features: boot, nix daemon settings (`nix-command`/flakes), networking, `locale` (`Europe/Stockholm` plus the `sv-latin1` console keymap for the TTY), OpenSSH, `tailscale`, `secrets` (sops-nix wiring, no secret material), `packages` (only `vim`/`wget`/`sops`/`ssh-to-age`; everything user-facing belongs in `home.packages` of a feature module), `zram-swap` (opt-in, `srv`), `state-version` and Home Manager integration (with the `pkgs-unstable` forwarding).
   - `modules/services/` — server applications (`immich`, `open-webui`, `samba`, `webdav`); regular feature modules that only `srv` imports today.
   - `modules/users/alfrest.nix` — user `alfrest` (`wheel`) and its Home Manager base (`home.stateVersion`).
-  - `modules/tools/` — per-user feature modules that work without a graphical session (xdg dirs, cli tools incl. `opencode`, git, zsh, `herdr` (package + config), nvim). Fonts are not here: Stylix installs them (`modules/desktop/stylix.nix`).
+  - `modules/tools/` — per-user feature modules that work without a graphical session (xdg dirs, cli tools incl. `opencode`, git, zsh, `herdr` (package + config), nvim, and `emacs` (Doom, config in `modules/files/doom`)). Fonts are not here: Stylix installs them (`modules/desktop/stylix.nix`).
   - `modules/lang/` — language toolchains for the user (`openjdk25`, `scala`/`metals`/`coursier` from `pkgs-unstable`); `home.packages`, opt-in per host.
   - `modules/desktop/` — everything that needs a graphical session: system-level pieces (`graphics.nix` — Mesa, keyring, polkit, portals; `stylix.nix` — colour scheme, fonts, icons and cursor from the Kanagawa Dragon base16 scheme in `pkgs.base16-schemes`, `autoEnable = false` so only the targets listed there — GTK, Qt, fontconfig, font packages — are themed; `niri.nix` — compositor with the `desktop.niri.output` option and generated KDL; `noctalia.nix` — bar/shell; `greetd.nix` — login → `niri-session`; `nvidia.nix` — proprietary driver; `steam.nix` — client plus 32-bit graphics stack and controller udev rules; `openrgb.nix` — RGB control; `nix-ld-gui.nix`) and per-user modules (`alacritty`, `apps` — media/zen incl. `zen-browser`, `clipboard`, `games`). `games`, `openrgb`, `nvidia` and `steam` are opt-in and not part of the `desktop` meta module; `openrgb`/`nvidia` are only on `dsk`, `steam` and `games` are on `dsk`/`lap` respectively.
   - `modules/meta/` — meta modules that only `imports` other `self.nixosModules.*` entries: `base` (system core + per-user non-GUI defaults) and `desktop` (system desktop stack + per-user GUI modules). Hosts import `base`, and GUI hosts additionally `desktop`; add a feature to the relevant meta module to give it to every host in that class.
-  - `modules/files/` — vendored config data (no `.nix` files, so `import-tree` ignores it): `herdr`, `nvim`, `niri`, `noctalia`. Two wiring conventions: files that must stay editable are linked with `lib.file.mkOutOfStoreSymlink` to this live checkout (`herdr`, `nvim`; assumes the repo stays at `/home/alfrest/nixos-config`), while files whose content Nix must rewrite for store paths use `text =` with `builtins.readFile` + `replaceStrings` (`niri`, `noctalia`, resolved from `modules/desktop/` as `../files/...`).
+  - `modules/files/` — vendored config data (no `.nix` files, so `import-tree` ignores it): `herdr`, `nvim`, `doom`, `niri`, `noctalia`. Two wiring conventions: files that must stay editable are linked with `lib.file.mkOutOfStoreSymlink` to this live checkout (`herdr`, `nvim`, `doom`; assumes the repo stays at `/home/alfrest/nixos-config`), while files whose content Nix must rewrite for store paths use `text =` with `builtins.readFile` + `replaceStrings` (`niri`, `noctalia`, resolved from `modules/desktop/` as `../files/...`).
 - `secrets/` + `.sops.yaml` — sops-nix ciphertext and its recipients (public keys). `secrets/common.yaml` is shared by every host, `secrets/<host>.yaml` is decryptable by that host's own ed25519 SSH host key only. `modules/system/secrets.nix` is the wiring (part of `base`); it holds no secret material. Never commit plaintext or a private key; runbook in `docs/secrets.md`.
 - On machines upgraded from the old pre-dendritic layout, `/etc/nixos` is a root-owned copy. Edits in this repo are only live after a rebuild from this directory.
+
+## Subprojects
+
+Some directories carry their own `AGENTS.md` with rules that apply only there.
+OpenCode loads it when it reads that directory, so this file only points to it;
+read it before editing the config next to it:
+
+- `modules/files/doom/AGENTS.md` — Doom Emacs: `doom sync` boundaries, what Nix
+  owns, theme/palette pairing.
 
 ## Verification is mandatory
 
