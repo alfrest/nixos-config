@@ -34,17 +34,10 @@
 (setq doom-font (font-spec :family "JetBrainsMono Nerd Font Mono" :size 22)
       doom-symbol-font (font-spec :family "JetBrainsMono Nerd Font Mono"))
 
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
-;; Specify both a dark and light theme, like so and Doom will choose which one
-;; to load based on your system light/dark setting:
-;;
-;;   (setq doom-theme '(doom-one   . doom-one-light))   ; (DARK . LIGHT)
-;;
-;; If you want more pro-active theme switching based on OS light/dark mode, look
-;; up the `auto-dark' package.
+;; The Dragon variant carries the same palette as Stylix's `kanagawa-dragon'
+;; base16 scheme, so Emacs matches the rest of the desktop. Doom does not bundle
+;; it; the MELPA package is declared in packages.el.
+(setq doom-theme 'kanagawa-dragon)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.

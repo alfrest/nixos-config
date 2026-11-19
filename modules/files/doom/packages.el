@@ -12,6 +12,10 @@
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;; (package! some-package)
 
+;; Doom ships no Kanagawa port; this MELPA package provides `kanagawa-dragon'
+;; (the theme set in config.el). The package name is plural.
+(package! kanagawa-themes)
+
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:
 ;; https://github.com/radian-software/straight.el#the-recipe-format
