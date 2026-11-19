@@ -31,7 +31,7 @@
 
 ;; Stylix installs the patched JetBrains Mono; using it for symbols too keeps
 ;; Emacs on a font that is actually present (its default is Symbola).
-(setq doom-font (font-spec :family "JetBrainsMono Nerd Font Mono" :size 13)
+(setq doom-font (font-spec :family "JetBrainsMono Nerd Font Mono" :size 22)
       doom-symbol-font (font-spec :family "JetBrainsMono Nerd Font Mono"))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
