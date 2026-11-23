@@ -35,6 +35,7 @@ in
 
       self.nixosModules.java
       self.nixosModules.scala
+      self.nixosModules.latex
 
       self.nixosModules.desktop
 
