@@ -51,6 +51,11 @@
 ;; (lsp +eglot) it never starts a server, so hook Eglot up for Java ourselves.
 (add-hook 'java-mode-local-vars-hook #'eglot-ensure)
 
+;; Nix installs Git in the per-user profile, which TRAMP's default remote path
+;; does not search. Keep the remote login PATH so Magit can find git on srv.
+(with-eval-after-load 'tramp
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `with-eval-after-load' block, otherwise Doom's defaults may override your
