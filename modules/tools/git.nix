@@ -9,6 +9,8 @@
       home-manager.users.alfrest.programs.git = {
         enable = true;
 
+        ignores = [ ".projectile" ];
+
         # Home Manager 26.05: single `settings` attrset; dotted keys are INI sections.
         settings = {
           user = {
