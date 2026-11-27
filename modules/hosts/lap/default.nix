@@ -43,6 +43,7 @@ in
       self.nixosModules.bluetooth
       self.nixosModules.eduroam
       self.nixosModules.games
+      self.nixosModules.musescore
       self.nixosModules.steam
       self.nixosModules.ulx3s
       self.nixosModules.wireshark
